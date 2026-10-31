@@ -245,7 +245,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'midterm',
       type: 'mc',
       text: `【期中動態・乘法直式】請問「${a} × ${b}」的計算結果是多少？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correct),
       explain: `【數學解析】直式乘法運算：${a} × ${b} ＝ ${correct}。`
     };
@@ -266,7 +266,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'final',
       type: 'mc',
       text: `【期末動態・除法應用】果園採收了 ${dividend} 顆水蜜桃，每 ${divisor} 顆裝成一盒，可以裝滿幾盒？還剩下幾顆？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】除法運算：${dividend} ÷ ${divisor} ＝ ${quotient} ... 餘數 ${remainder}。驗算：${divisor} × ${quotient} ＋ ${remainder} ＝ ${dividend}。`
     };
@@ -287,7 +287,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'midterm',
       type: 'mc',
       text: `【期中動態・角度量測】把一個 ${a1} 度的角和一個 ${a2} 度的角拼在一起，形成的新角是幾度？屬於哪一種角？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】${a1}° ＋ ${a2}° ＝ ${sum}°。小於 90° 是銳角，等於 90° 是直角，大於 90° 且小於 180° 是鈍角。`
     };
@@ -307,7 +307,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'midterm',
       type: 'mc',
       text: `【期中動態・長度換算】大耳狗參加馬拉松健行，走了「${km} 公里 ${m} 公尺」，換算成「公尺」是多少公尺？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】1 公里 ＝ 1000 公尺，所以 ${km} 公里 ＝ ${km * 1000} 公尺，加上 ${m} 公尺等於 ${totalM} 公尺。`
     };
@@ -328,7 +328,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'midterm',
       type: 'mc',
       text: `【期中動態・分數轉換】將假分數「${improperNum}/${denom}」換算成帶分數是多少？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】${improperNum} ÷ ${denom} ＝ ${whole} ... 餘數 ${numRem}，所以換算成帶分數是 ${correctStr}。`
     };
@@ -348,7 +348,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'final',
       type: 'mc',
       text: `【期末動態・單元七 三角形與全等】有一個「等腰三角形」，它的其中一條腰長是 ${leg} 公分，底邊長是 ${base} 公分。如果把一個跟它「全等」的三角形疊合上去，請問這個全等三角形的周長（三邊長總和）是多少公分？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】等腰三角形的兩條腰一樣長（都是 ${leg} 公分），全等三角形的大小與邊長完全相同，因此周長 ＝ ${leg} ＋ ${leg} ＋ ${base} ＝ ${perim} 公分。`
     };
@@ -366,7 +366,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'final',
       type: 'mc',
       text: `【期末動態・兩步驟運算】計算綜合算式「${base} － ${multA} × ${multB}」的結果是多少？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(String(correct)),
       explain: `【數學解析】運算順序：先乘除後加減。先算 ${multA} × ${multB} ＝ ${multA * multB}；再算 ${base} － ${multA * multB} ＝ ${correct}。`
     };
@@ -386,7 +386,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'final',
       type: 'mc',
       text: `【期末動態・二位小數】直式加法計算：請問「${d1} ＋ ${d2}」的計算結果是多少？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】二位小數直式加法對齊小數點：${d1} ＋ ${d2} ＝ ${sum}。`
     };
@@ -406,7 +406,7 @@ function generateDynamicMathQuestion(stage = currentStage, allowedTypes = null) 
       stage: 'midterm',
       type: 'mc',
       text: `【期中動態・大數讀寫】請問「${wan} 萬零 ${ge}」用阿拉伯數字該如何記寫？`,
-      options: opts.map((val, idx) => `①②③④`[idx] + ' ' + val),
+      options: opts,
       answer: opts.indexOf(correctStr),
       explain: `【數學解析】${wan} 萬代表在萬位以上是 ${wan}，個級是 ${ge.toString().padStart(4, '0')}，合記為 ${num}。`
     };

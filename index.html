@@ -1246,43 +1246,20 @@
         font-size: 1.1rem;
       }
 
-      /* Compact Floating Buttons on Mobile */
+      /* Floating Buttons on Mobile */
       .floating-scratchpad-btn {
-        bottom: 66px;
-        right: 12px;
-        padding: 8px 12px;
-        font-size: 0.82rem;
-        gap: 4px;
-        box-shadow: 0 4px 14px rgba(220, 160, 40, 0.28);
-      }
-      .floating-cinnamo-btn {
-        bottom: 12px;
-        right: 12px;
-        padding: 6px 10px;
+        position: fixed;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+        padding: 8px 14px;
+        font-size: 0.85rem;
         gap: 6px;
-        box-shadow: 0 4px 14px rgba(70, 130, 200, 0.25);
+        box-shadow: 0 4px 16px rgba(220, 160, 40, 0.32);
+        z-index: 100;
       }
-      .companion-avatar {
-        width: 36px;
-        height: 26px;
-      }
-      .companion-text {
-        display: none;
-      }
-      .floating-cinnamo-btn.show-bubble .companion-text {
-        display: block;
-        position: absolute;
-        right: 54px;
-        bottom: 4px;
-        background: #ffffff;
-        border: 2.5px solid #90c7f7;
-        border-radius: 16px;
-        padding: 8px 12px;
-        width: max-content;
-        max-width: 68vw;
-        font-size: 0.84rem;
-        line-height: 1.4;
-        box-shadow: 0 6px 18px rgba(45, 110, 180, 0.22);
+      /* 手機版隱藏右下角漂浮大耳狗頭像（避免遮擋題目選項或被螢幕邊緣切角），大耳狗加油功能直接整合至頂部吉祥物與作答互動中 */
+      .floating-cinnamo-btn {
+        display: none !important;
       }
 
       /* Modals on Mobile */
@@ -1348,19 +1325,12 @@
         display: none;
       }
       .floating-scratchpad-btn {
-        width: 44px;
-        height: 44px;
+        width: 46px;
+        height: 46px;
         padding: 0;
         justify-content: center;
         border-radius: 50%;
-        font-size: 1.15rem;
-      }
-      .floating-cinnamo-btn {
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        justify-content: center;
-        border-radius: 50%;
+        font-size: 1.25rem;
       }
     }
   </style>
@@ -1388,7 +1358,7 @@
     
     <!-- Online Web Header -->
     <header class="cinnamo-header">
-      <div class="header-decor-top">
+      <div class="header-decor-top" onclick="cheerUp()" style="cursor: pointer;" title="點擊大耳狗聽打氣語音！🐶">
         <svg class="cinnamo-mascot" viewBox="0 0 200 140">
           <ellipse cx="100" cy="115" rx="75" ry="18" fill="#e2f1fc"/>
           <ellipse cx="60" cy="112" rx="30" ry="14" fill="#edf6fd"/>
@@ -1975,11 +1945,11 @@
     </div>
   </div>
 
-  <script src="question_bank.js?v=20261101_1"></script>
-  <script src="question_bank_extra.js?v=20261101_1"></script>
-  <script src="question_bank_v2.js?v=20261101_1"></script>
-  <script src="question_bank_melances.js?v=20261101_1"></script>
-  <script src="app.js?v=20261101_1"></script>
-  <script src="scope.js?v=20261101_1"></script>
+  <script src="question_bank.js?v=20261101_3"></script>
+  <script src="question_bank_extra.js?v=20261101_3"></script>
+  <script src="question_bank_v2.js?v=20261101_3"></script>
+  <script src="question_bank_melances.js?v=20261101_3"></script>
+  <script src="app.js?v=20261101_3"></script>
+  <script src="scope.js?v=20261101_3"></script>
 </body>
 </html>
