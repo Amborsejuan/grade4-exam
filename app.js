@@ -1856,6 +1856,12 @@ function testCurrentVoice() {
     alert("目前【題目語音：已關閉】！請先點擊左側的「🔇 題目語音：已關閉」按鈕將語音開啟喔！");
     return;
   }
+  const sName = getStudentName();
+  const isEngVoice = (currentVoiceKey === 'english_teacher' || currentSubject === 'english');
+  const fallbackPreviewText = isEngVoice
+    ? "Hello! Welcome to English class. Let's practice English together with Cinnamoroll!"
+    : `哈囉${sName}！我們一起來挑戰段考拿一百分吧！`;
+
   // 雲端靜態版切換語音試聽時，若未連線本機伺服器，直接播放預錄好的 Edge-TTS 原聲 MP3 音檔！
   if (IS_STATIC_CLOUD && !hasLocalTtsServer) {
     stopAllSpeech();
@@ -1863,16 +1869,15 @@ function testCurrentVoice() {
     currentAudio = previewAudio;
     previewAudio.onended = () => stopAllSpeech();
     previewAudio.onerror = () => {
-      fallbackLocalTTS("哈囉！我們一起來挑戰段考拿一百分吧！", currentVoiceKey);
+      fallbackLocalTTS(fallbackPreviewText, currentVoiceKey);
     };
     previewAudio.play().catch(() => {
-      fallbackLocalTTS("哈囉！我們一起來挑戰段考拿一百分吧！", currentVoiceKey);
+      fallbackLocalTTS(fallbackPreviewText, currentVoiceKey);
     });
     return;
   }
-  const sName = getStudentName();
   let sampleText = `哈囉${sName}！我是大耳狗！我們一起來挑戰期中考吧！`;
-  if (currentSubject === 'english' || currentVoiceKey === 'english_teacher') {
+  if (isEngVoice) {
     sampleText = "Hello! Welcome to English class. Let's practice English together!";
   } else if (currentVoiceKey === 'gentle') {
     sampleText = `${sName}你好，我是溫柔姐姐曉臻，我們慢慢讀題目，你一定能拿一百分喔！`;
@@ -1970,10 +1975,12 @@ function readAloud(text, targetQId = null, forcePlay = false) {
     ? currentVoiceKey
     : ((lastActiveVoiceKey && lastActiveVoiceKey !== 'mute') ? lastActiveVoiceKey : 'cinnamo');
 
-  if (isMostlyEnglish(cleanText)) {
+  // 若在英語科或題目為英文題，一律使用美式英語老師道地發音
+  const isEnglishContent = currentSubject === 'english' || (targetQId && String(targetQId).startsWith('e_')) || isMostlyEnglish(cleanText);
+  if (isEnglishContent) {
     styleToUse = 'english_teacher';
   } else if (styleToUse === 'english_teacher' && !(targetQId && String(targetQId).startsWith('cheer_'))) {
-    // 當唸中文成績播報或中文題目時，若原本在美語老師模式，自動以大耳狗中文語音播報才不會跳過中文字
+    // 當唸中文科目題目時，若原本在美語老師模式，自動以大耳狗中文語音播報才不會跳過中文字
     styleToUse = 'cinnamo';
   }
 
@@ -2042,7 +2049,7 @@ function fallbackLocalTTS(cleanText, styleKey = null) {
   }
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(cleanText);
-  const isEng = isMostlyEnglish(cleanText);
+  const isEng = isMostlyEnglish(cleanText) || activeKey === 'english_teacher' || currentSubject === 'english' || (styleKey === 'english_teacher');
   const activeKey = styleKey === 'cinnamoroll' ? 'cinnamo' : (styleKey || currentVoiceKey);
   const preset = voicePresets[activeKey] || voicePresets[currentVoiceKey] || voicePresets.cinnamo;
 
