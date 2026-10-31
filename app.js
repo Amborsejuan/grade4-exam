@@ -1952,43 +1952,163 @@ function playViaLocalServerOrFallback(cleanText, styleToUse, allowRoboticFallbac
 }
 
 // ==========================================================================
-// 🔊 智慧題目與選項朗讀引擎
+// 🔊 智慧題目與選項朗讀引擎（支援中英雙角色切換朗讀）
 // ==========================================================================
+function playSegmentsViaBrowser(segments) {
+  if (!('speechSynthesis' in window) || !segments || segments.length === 0) {
+    stopAllSpeech();
+    return;
+  }
+  window.speechSynthesis.cancel();
+
+  let idx = 0;
+  function speakNext() {
+    if (idx >= segments.length) {
+      stopAllSpeech();
+      return;
+    }
+    const seg = segments[idx++];
+    const utter = new SpeechSynthesisUtterance(seg.text);
+    const isEng = (seg.style === 'english_teacher');
+    const activeKey = (seg.style === 'cinnamoroll' ? 'cinnamo' : seg.style);
+    const preset = voicePresets[activeKey] || voicePresets.cinnamo;
+
+    if (isEng) {
+      utter.lang = 'en-US';
+      utter.pitch = voicePresets.english_teacher.pitch;
+      utter.rate = voicePresets.english_teacher.rate;
+    } else {
+      utter.lang = 'zh-TW';
+      utter.pitch = preset.pitch;
+      utter.rate = preset.rate;
+    }
+    const matchedVoice = pickBestBrowserVoice(activeKey, isEng);
+    if (matchedVoice) {
+      utter.voice = matchedVoice;
+      utter.lang = matchedVoice.lang;
+    }
+
+    utter.onend = () => speakNext();
+    utter.onerror = (e) => {
+      console.warn('Speech segment error:', e);
+      speakNext();
+    };
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  speakNext();
+}
+
+function playSpeechSegments(segments) {
+  if (!segments || segments.length === 0) return;
+  stopAllSpeech();
+
+  if (hasLocalTtsServer) {
+    let currentIdx = 0;
+    function playNextServerSegment() {
+      if (currentIdx >= segments.length) {
+        stopAllSpeech();
+        return;
+      }
+      const seg = segments[currentIdx++];
+      const ttsBase = IS_STATIC_CLOUD ? 'http://127.0.0.1:8080' : API_BASE;
+      const audioUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(seg.text)}&style=${seg.style}`;
+
+      if (IS_STATIC_CLOUD) {
+        fetch(audioUrl)
+          .then(res => {
+            if (!res.ok) throw new Error('TTS error');
+            return res.blob();
+          })
+          .then(blob => {
+            const blobUrl = URL.createObjectURL(blob);
+            const audio = new Audio(blobUrl);
+            currentAudio = audio;
+            audio.onended = () => {
+              URL.revokeObjectURL(blobUrl);
+              playNextServerSegment();
+            };
+            audio.onerror = () => {
+              URL.revokeObjectURL(blobUrl);
+              playSegmentsViaBrowser(segments.slice(currentIdx - 1));
+            };
+            audio.play().catch(() => {
+              URL.revokeObjectURL(blobUrl);
+              playSegmentsViaBrowser(segments.slice(currentIdx - 1));
+            });
+          })
+          .catch(() => {
+            hasLocalTtsServer = false;
+            playSegmentsViaBrowser(segments.slice(currentIdx - 1));
+          });
+      } else {
+        const audio = new Audio(audioUrl);
+        currentAudio = audio;
+        audio.onended = () => playNextServerSegment();
+        audio.onerror = () => playSegmentsViaBrowser(segments.slice(currentIdx - 1));
+        audio.play().catch(() => playSegmentsViaBrowser(segments.slice(currentIdx - 1)));
+      }
+    }
+    playNextServerSegment();
+    return;
+  }
+
+  playSegmentsViaBrowser(segments);
+}
+
 function readQuestion(qId) {
   if (!isVoiceEnabled || currentVoiceKey === 'mute') return;
   const q = (currentExamQuestions || []).find(item => item.id === qId);
   if (!q) return;
 
-  // 英語科或英語題目專用處理：確保題幹不含中括號單元雜訊，且 100% 讀出畫面目前呈現的 A, B, C, D 選項
+  // 啟用題目卡拉OK發光波紋
+  speakingBlockId = `block_${q.id}`;
+  const targetBlock = document.getElementById(speakingBlockId);
+  if (targetBlock) {
+    targetBlock.classList.add('speaking-pulse');
+    targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // 英語科或英語題目專用處理：中文題幹用大耳狗語音，英文選項與英文內容用道地英語老師語音！
   if (currentSubject === 'english' || (q.id && String(q.id).startsWith('e_'))) {
     stopAllSpeech();
 
     // 1. 去除題幹中如【期中・WW3 Unit 1】或【期末・Starter】的標籤雜訊，填空底線唸 blank
     let cleanStem = q.text.replace(/【[^】]*】/g, '').replace(/_{2,}/g, ' blank ').replace(/\s+/g, ' ').trim();
 
+    const chineseVoiceStyle = (currentVoiceKey && currentVoiceKey !== 'mute' && currentVoiceKey !== 'english_teacher')
+      ? currentVoiceKey
+      : 'cinnamo';
+
+    const segments = [];
+
+    // 判斷題幹是否含有中文
+    const stemHasChinese = /[\u4e00-\u9fa5]/.test(cleanStem);
+    if (stemHasChinese) {
+      // 中文題幹：使用大耳狗語音親切朗讀
+      segments.push({ text: cleanStem, style: chineseVoiceStyle });
+    } else {
+      // 純英文題幹：使用美式英語老師語音道地朗讀
+      segments.push({ text: cleanStem, style: 'english_teacher' });
+    }
+
     // 2. 組合目前畫面上洗牌後的選項，讓語音與畫面看到的 A, B, C, D 100% 吻合！
-    let fullSpeech = cleanStem;
     if (q.type === 'mc' && q.options && q.options.length > 0) {
       const letters = ['A', 'B', 'C', 'D'];
+      const optHasChinese = q.options.some(o => /[\u4e00-\u9fa5]/.test(o));
       const optParts = q.options.map((opt, oIdx) => {
         const cleanOpt = String(opt).replace(/^\s*(?:[①②③④⑤]|[\(\（][1-4A-Da-d①-④][\)\）]|[1-4A-Da-d][\.\、\)\）])\s*/, '').trim();
         return `Option ${letters[oIdx] || oIdx + 1}: ${cleanOpt}`;
       });
-      fullSpeech += '. ' + optParts.join('. ');
+      const optText = optParts.join('. ');
+
+      // 如果選項是英文，使用英語老師語音；若選項本身是中文（如中文意思選項），使用大耳狗語音
+      const optStyle = optHasChinese ? chineseVoiceStyle : 'english_teacher';
+      segments.push({ text: optText, style: optStyle });
     }
 
-    // 啟用波紋發光效果
-    speakingBlockId = `block_${q.id}`;
-    const targetBlock = document.getElementById(speakingBlockId);
-    if (targetBlock) {
-      targetBlock.classList.add('speaking-pulse');
-      targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    const hasChinese = /[\u4e00-\u9fa5]/.test(fullSpeech);
-    // 含中文（如題幹提示、中文字選項）使用溫柔曉臻雙語聲線，純英文題使用道地美式英語老師聲線
-    const styleToUse = hasChinese ? 'gentle' : 'english_teacher';
-    playViaLocalServerOrFallback(fullSpeech, styleToUse, true);
+    playSpeechSegments(segments);
     return;
   }
 
@@ -2001,8 +2121,11 @@ function readOptionAloud(letter, optText) {
   stopAllSpeech();
   const text = `Option ${letter}: ${optText}`;
   const hasChinese = /[\u4e00-\u9fa5]/.test(text);
-  const styleToUse = hasChinese ? 'gentle' : 'english_teacher';
-  playViaLocalServerOrFallback(text, styleToUse, true);
+  const chineseVoiceStyle = (currentVoiceKey && currentVoiceKey !== 'mute' && currentVoiceKey !== 'english_teacher')
+    ? currentVoiceKey
+    : 'cinnamo';
+  const styleToUse = hasChinese ? chineseVoiceStyle : 'english_teacher';
+  playSpeechSegments([{ text, style: styleToUse }]);
 }
 
 function readAloud(text, targetQId = null, forcePlay = false) {
