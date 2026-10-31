@@ -489,6 +489,22 @@
       background: #cae4fc;
       transform: scale(1.08);
     }
+    .opt-tts-btn {
+      background: #eef6fd;
+      border: 1.5px solid #bfe0fc;
+      border-radius: 10px;
+      padding: 4px 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      color: #2769a6;
+      margin-left: auto;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .opt-tts-btn:hover {
+      background: #cae4fc;
+      transform: scale(1.1);
+    }
 
     /* Options */
     .tf-options-grid {
@@ -896,7 +912,7 @@
       }
       .sky-cloud, .cinnamo-mascot, .badge-tag, .top-tools-hub, .subject-nav-grid, 
       .exam-control-bar, .sticky-stats, .bottom-actions, .floating-cinnamo-btn, 
-      .floating-scratchpad-btn, .tts-btn, .explanation-box, .voice-settings-card,
+      .floating-scratchpad-btn, .tts-btn, .opt-tts-btn, .explanation-box, .voice-settings-card,
       .common-modal-overlay, .scratchpad-overlay {
         display: none !important;
       }
@@ -1521,7 +1537,8 @@
         </button>
       </div>
       <style>
-        body.voice-disabled .tts-btn {
+        body.voice-disabled .tts-btn,
+        body.voice-disabled .opt-tts-btn {
           display: none !important;
         }
       </style>
@@ -1945,11 +1962,11 @@
     </div>
   </div>
 
-  <script src="question_bank.js?v=20261101_5"></script>
-  <script src="question_bank_extra.js?v=20261101_5"></script>
-  <script src="question_bank_v2.js?v=20261101_5"></script>
-  <script src="question_bank_melances.js?v=20261101_5"></script>
-  <script src="app.js?v=20261101_5"></script>
-  <script src="scope.js?v=20261101_5"></script>
+  <script src="question_bank.js?v=20261101_6"></script>
+  <script src="question_bank_extra.js?v=20261101_6"></script>
+  <script src="question_bank_v2.js?v=20261101_6"></script>
+  <script src="question_bank_melances.js?v=20261101_6"></script>
+  <script src="app.js?v=20261101_6"></script>
+  <script src="scope.js?v=20261101_6"></script>
 </body>
 </html>

@@ -640,14 +640,20 @@ function renderExam() {
         </div>
       `;
     } else {
+      const isEngSubject = (currentSubject === 'english' || (q.id && String(q.id).startsWith('e_')));
       optionsHtml = `
         <div class="mc-options-list">
           ${q.options.map((opt, optIdx) => {
             const cleanOptText = String(opt).replace(/^\s*(?:[①②③④⑤]|[\(\（][1-4A-Da-d①-④][\)\）]|[1-4A-Da-d][\.\、\)\）])\s*/, '');
+            const letter = ['A','B','C','D'][optIdx] || optIdx+1;
+            const optVoiceBtn = isEngSubject
+              ? `<button class="opt-tts-btn" title="朗讀選項 ${letter}" onclick="event.stopPropagation(); readOptionAloud('${letter}', '${cleanOptText.replace(/'/g, "\\'")}')">🔊</button>`
+              : '';
             return `
             <div class="mc-option-card" id="opt_${q.id}_${optIdx}" onclick="selectMC('${q.id}', ${optIdx})">
-              <div class="mc-radio-circle">${['A','B','C','D'][optIdx] || optIdx+1}</div>
+              <div class="mc-radio-circle">${letter}</div>
               <div class="mc-option-text">${cleanOptText}</div>
+              ${optVoiceBtn}
             </div>
           `;
           }).join('')}
@@ -659,7 +665,7 @@ function renderExam() {
       <div class="q-top-row">
         <div class="q-number">${idx + 1}</div>
         <div class="q-content">${q.text.replace(/\n/g, '<br>')}</div>
-        <button class="tts-btn" title="朗讀題目" onclick="readAloud('${q.text.replace(/\n/g, ' ').replace(/'/g, "\\'")}', '${q.id}')">🔊</button>
+        <button class="tts-btn" title="朗讀題目與選項" onclick="readQuestion('${q.id}')">🔊</button>
       </div>
       ${optionsHtml}
       <div class="explanation-box" id="exp_${q.id}">${q.explain}</div>
@@ -1945,6 +1951,60 @@ function playViaLocalServerOrFallback(cleanText, styleToUse, allowRoboticFallbac
   }
 }
 
+// ==========================================================================
+// 🔊 智慧題目與選項朗讀引擎
+// ==========================================================================
+function readQuestion(qId) {
+  if (!isVoiceEnabled || currentVoiceKey === 'mute') return;
+  const q = (currentExamQuestions || []).find(item => item.id === qId);
+  if (!q) return;
+
+  // 英語科或英語題目專用處理：確保題幹不含中括號單元雜訊，且 100% 讀出畫面目前呈現的 A, B, C, D 選項
+  if (currentSubject === 'english' || (q.id && String(q.id).startsWith('e_'))) {
+    stopAllSpeech();
+
+    // 1. 去除題幹中如【期中・WW3 Unit 1】或【期末・Starter】的標籤雜訊，填空底線唸 blank
+    let cleanStem = q.text.replace(/【[^】]*】/g, '').replace(/_{2,}/g, ' blank ').replace(/\s+/g, ' ').trim();
+
+    // 2. 組合目前畫面上洗牌後的選項，讓語音與畫面看到的 A, B, C, D 100% 吻合！
+    let fullSpeech = cleanStem;
+    if (q.type === 'mc' && q.options && q.options.length > 0) {
+      const letters = ['A', 'B', 'C', 'D'];
+      const optParts = q.options.map((opt, oIdx) => {
+        const cleanOpt = String(opt).replace(/^\s*(?:[①②③④⑤]|[\(\（][1-4A-Da-d①-④][\)\）]|[1-4A-Da-d][\.\、\)\）])\s*/, '').trim();
+        return `Option ${letters[oIdx] || oIdx + 1}: ${cleanOpt}`;
+      });
+      fullSpeech += '. ' + optParts.join('. ');
+    }
+
+    // 啟用波紋發光效果
+    speakingBlockId = `block_${q.id}`;
+    const targetBlock = document.getElementById(speakingBlockId);
+    if (targetBlock) {
+      targetBlock.classList.add('speaking-pulse');
+      targetBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    const hasChinese = /[\u4e00-\u9fa5]/.test(fullSpeech);
+    // 含中文（如題幹提示、中文字選項）使用溫柔曉臻雙語聲線，純英文題使用道地美式英語老師聲線
+    const styleToUse = hasChinese ? 'gentle' : 'english_teacher';
+    playViaLocalServerOrFallback(fullSpeech, styleToUse, true);
+    return;
+  }
+
+  // 其他非英語科目（國語、數學、社會、自然）：正常朗讀題目，可命中原聲預錄 MP3
+  readAloud(q.text, q.id);
+}
+
+function readOptionAloud(letter, optText) {
+  if (!isVoiceEnabled || currentVoiceKey === 'mute') return;
+  stopAllSpeech();
+  const text = `Option ${letter}: ${optText}`;
+  const hasChinese = /[\u4e00-\u9fa5]/.test(text);
+  const styleToUse = hasChinese ? 'gentle' : 'english_teacher';
+  playViaLocalServerOrFallback(text, styleToUse, true);
+}
+
 function readAloud(text, targetQId = null, forcePlay = false) {
   if (!forcePlay && (!isVoiceEnabled || currentVoiceKey === 'mute')) return;
   stopAllSpeech();
@@ -1982,6 +2042,12 @@ function readAloud(text, targetQId = null, forcePlay = false) {
   } else if (styleToUse === 'english_teacher' && !(targetQId && String(targetQId).startsWith('cheer_'))) {
     // 當唸中文科目題目時，若原本在美語老師模式，自動以大耳狗中文語音播報才不會跳過中文字
     styleToUse = 'cinnamo';
+  }
+
+  const hasChinese = /[\u4e00-\u9fa5]/.test(cleanText);
+  if (hasChinese && styleToUse === 'english_teacher') {
+    // 待唸文字包含中文（如題幹提示、中文字選項或中翻英），自動切換至中文溫柔姐姐/雙語聲線，確保中英字音完整唸出
+    styleToUse = 'gentle';
   }
 
   // 1. 若帶有預錄語音代號 targetQId（包含全部 406 題庫題目、右下角大耳狗加油打氣 cheer_0..4、換卷播報等），優先直接播放 Edge-TTS 原聲 MP3！
@@ -2049,8 +2115,9 @@ function fallbackLocalTTS(cleanText, styleKey = null) {
   }
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(cleanText);
-  const isEng = isMostlyEnglish(cleanText) || activeKey === 'english_teacher' || currentSubject === 'english' || (styleKey === 'english_teacher');
   const activeKey = styleKey === 'cinnamoroll' ? 'cinnamo' : (styleKey || currentVoiceKey);
+  const hasChinese = /[\u4e00-\u9fa5]/.test(cleanText);
+  const isEng = !hasChinese && (isMostlyEnglish(cleanText) || activeKey === 'english_teacher' || currentSubject === 'english' || (styleKey === 'english_teacher'));
   const preset = voicePresets[activeKey] || voicePresets[currentVoiceKey] || voicePresets.cinnamo;
 
   if (isEng) {
