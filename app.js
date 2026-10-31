@@ -1850,6 +1850,20 @@ function testCurrentVoice() {
     alert("目前【題目語音：已關閉】！請先點擊左側的「🔇 題目語音：已關閉」按鈕將語音開啟喔！");
     return;
   }
+  // 雲端靜態版切換語音試聽時，若未連線本機伺服器，直接播放預錄好的 Edge-TTS 原聲 MP3 音檔！
+  if (IS_STATIC_CLOUD && !hasLocalTtsServer) {
+    stopAllSpeech();
+    const previewAudio = new Audio(`audio_cache/preview_${currentVoiceKey}.mp3`);
+    currentAudio = previewAudio;
+    previewAudio.onended = () => stopAllSpeech();
+    previewAudio.onerror = () => {
+      fallbackLocalTTS("哈囉！我們一起來挑戰段考拿一百分吧！", currentVoiceKey);
+    };
+    previewAudio.play().catch(() => {
+      fallbackLocalTTS("哈囉！我們一起來挑戰段考拿一百分吧！", currentVoiceKey);
+    });
+    return;
+  }
   const sName = getStudentName();
   let sampleText = `哈囉${sName}！我是大耳狗！我們一起來挑戰期中考吧！`;
   if (currentSubject === 'english' || currentVoiceKey === 'english_teacher') {
