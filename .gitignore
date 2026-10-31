@@ -2,6 +2,10 @@ config.json
 user_data.json
 audio_cache/*
 !audio_cache/preview_*.mp3
+!audio_cache/q_*.mp3
+!audio_cache/stage_*.mp3
+!audio_cache/new_paper_*.mp3
+!audio_cache/voice_on_*.mp3
 __pycache__/
 *.pyc
 .DS_Store

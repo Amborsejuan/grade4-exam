@@ -442,15 +442,7 @@ function setExamStage(stage) {
     document.getElementById('subjectHeaderSubtitle').innerText = `${cfg.icon} 當前考科：${cfg.name}（${currentVersion}）｜ ${subTxt}`;
   }
 
-  // 語音溫馨提示
-  const stageNames = {
-    'midterm': '期中考階段（第1次段考前半冊）',
-    'final': '期末考階段（第2次段考後半冊）',
-    'all': '全冊總複習（整學期大會考）'
-  };
-  readAloud(`已為${getStudentName()}切換至【${stageNames[stage]}】！開始練習囉！`);
-
-  // 立即隨機產生新試卷
+  // 立即隨機產生新試卷（由 generateRandomExam 統一負責語音播報）
   generateRandomExam(true);
 }
 
@@ -538,8 +530,8 @@ function generateRandomExam(isNewPaper = true) {
   }
   let sampled = [];
 
-  // 若為數學科，融合動態百變運算題
-  if (currentSubject === 'math') {
+  // 若為數學科，融合動態百變運算題（雲端靜態版且未開本機伺服器時，優先使用已預錄 Edge-TTS 真人語音的題庫題目，確保每題語音與試聽完全一致）
+  if (currentSubject === 'math' && (!IS_STATIC_CLOUD || hasLocalTtsServer)) {
     const dynTypes = scopeUnits ? getScopeDynamicTypes(scopeUnits) : null;
     let dynCount = Math.floor(currentQuestionCount / 2);
     let poolCount = currentQuestionCount - dynCount;
@@ -583,7 +575,7 @@ function generateRandomExam(isNewPaper = true) {
 
   if (isNewPaper) {
     const cfg = SUBJECT_CONFIGS[currentSubject];
-    readAloud(`已為${getStudentName()}隨機抽出了一份全新的 ${cfg.name} 試卷！加油喔！`);
+    readAloud(`已為${getStudentName()}隨機抽出了一份全新的 ${cfg.name} 試卷！加油喔！`, `__new_paper_${currentSubject}`);
   }
 }
 
@@ -1884,6 +1876,56 @@ function isMostlyEnglish(text) {
   return letters > chinese && letters > 3;
 }
 
+function playViaLocalServerOrFallback(cleanText, styleToUse, allowRoboticFallback = true) {
+  if (hasLocalTtsServer) {
+    const ttsBase = IS_STATIC_CLOUD ? 'http://127.0.0.1:8080' : API_BASE;
+    const audioUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(cleanText)}&style=${styleToUse}`;
+
+    if (IS_STATIC_CLOUD) {
+      // 在 HTTPS (GitHub Pages) 下連線本機 127.0.0.1:8080，使用 fetch + Blob 避免瀏覽器 Mixed Content 阻擋 <audio>
+      fetch(audioUrl)
+        .then(res => {
+          if (!res.ok) throw new Error('TTS HTTP error');
+          return res.blob();
+        })
+        .then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          const audio = new Audio(blobUrl);
+          currentAudio = audio;
+          audio.onended = () => {
+            URL.revokeObjectURL(blobUrl);
+            stopAllSpeech();
+          };
+          audio.onerror = () => {
+            URL.revokeObjectURL(blobUrl);
+            if (allowRoboticFallback) fallbackLocalTTS(cleanText, styleToUse);
+          };
+          audio.play().catch(() => {
+            URL.revokeObjectURL(blobUrl);
+            if (allowRoboticFallback) fallbackLocalTTS(cleanText, styleToUse);
+          });
+        })
+        .catch(() => {
+          hasLocalTtsServer = false;
+          if (allowRoboticFallback) fallbackLocalTTS(cleanText, styleToUse);
+        });
+      return;
+    }
+
+    const audio = new Audio(audioUrl);
+    currentAudio = audio;
+    audio.onended = () => stopAllSpeech();
+    audio.onerror = () => {
+      if (allowRoboticFallback) fallbackLocalTTS(cleanText, styleToUse);
+    };
+    audio.play().catch(() => {
+      if (allowRoboticFallback) fallbackLocalTTS(cleanText, styleToUse);
+    });
+  } else if (allowRoboticFallback) {
+    fallbackLocalTTS(cleanText, styleToUse);
+  }
+}
+
 function readAloud(text, targetQId = null) {
   if (!isVoiceEnabled || currentVoiceKey === 'mute') return;
   stopAllSpeech();
@@ -1898,8 +1940,10 @@ function readAloud(text, targetQId = null) {
     .trim();
   if (!cleanText) return;
 
+  const isInternalTag = targetQId && String(targetQId).startsWith('__');
+
   // 啟用題目卡拉OK發光波紋
-  if (targetQId) {
+  if (targetQId && !isInternalTag) {
     speakingBlockId = `block_${targetQId}`;
     const targetBlock = document.getElementById(speakingBlockId);
     if (targetBlock) {
@@ -1913,32 +1957,31 @@ function readAloud(text, targetQId = null) {
     styleToUse = 'english_teacher';
   } else if (styleToUse === 'english_teacher') {
     // 當唸中文成績播報或中文題目時，若原本在美語老師模式，自動以大耳狗中文語音播報才不會跳過中文字
-    styleToUse = 'cinnamoroll';
+    styleToUse = 'cinnamo';
   }
 
-  // 優先使用本地後端高品質 Edge-TTS（若本機 8080 伺服器有開，連 GitHub Pages 也能自動調用；外部設備則使用多聲線/音調分流的瀏覽器語音）
-  if (hasLocalTtsServer) {
-    const ttsBase = IS_STATIC_CLOUD ? 'http://127.0.0.1:8080' : API_BASE;
-    const audioUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(cleanText)}&style=${styleToUse}`;
-    const audio = new Audio(audioUrl);
-    currentAudio = audio;
-
-    audio.onended = () => {
-      stopAllSpeech();
+  // 1. 若為題庫題目（帶有題號 targetQId），優先直接播放預錄好的 Edge-TTS 原聲 MP3（與試聽語音 100% 相同且零延遲！）
+  if (targetQId && !isInternalTag && !String(targetQId).startsWith('dyn_') && !String(targetQId).startsWith('ai_')) {
+    const prebuiltUrl = `audio_cache/q_${styleToUse}_${targetQId}.mp3`;
+    const qAudio = new Audio(prebuiltUrl);
+    currentAudio = qAudio;
+    qAudio.onended = () => stopAllSpeech();
+    qAudio.onerror = () => {
+      playViaLocalServerOrFallback(cleanText, styleToUse, true);
     };
-    audio.onerror = () => {
-      if (IS_STATIC_CLOUD) hasLocalTtsServer = false;
-      fallbackLocalTTS(cleanText, styleToUse);
-    };
-
-    audio.play().catch(err => {
-      console.warn('AI TTS playback failed, falling back to local speech:', err);
-      if (IS_STATIC_CLOUD) hasLocalTtsServer = false;
-      fallbackLocalTTS(cleanText, styleToUse);
+    qAudio.play().catch(() => {
+      playViaLocalServerOrFallback(cleanText, styleToUse, true);
     });
-  } else {
-    fallbackLocalTTS(cleanText, styleToUse);
+    return;
   }
+
+  // 2. 若為抽換新試卷的自動過場播報，在純靜態雲端且無本機伺服器時不強制觸發機械系統音，避免與試聽音色落差
+  if (isInternalTag && IS_STATIC_CLOUD && !hasLocalTtsServer) {
+    return;
+  }
+
+  // 3. 其他動態語音（或本機伺服器已開啟時）
+  playViaLocalServerOrFallback(cleanText, styleToUse, true);
 }
 
 function pickBestBrowserVoice(styleKey, isEng) {
@@ -2424,9 +2467,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   // 若開啟雲端網址但本機剛好有啟動 server.py，自動啟用本機高品質 Edge-TTS 真人語音包
   if (IS_STATIC_CLOUD) {
-    fetch('http://127.0.0.1:8080/api/config').then(r => {
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 500);
+      const r = await fetch('http://127.0.0.1:8080/api/config', { signal: ctrl.signal });
+      clearTimeout(tid);
       if (r.ok) hasLocalTtsServer = true;
-    }).catch(() => {});
+    } catch (e) {}
   }
 
   const nameInput = document.getElementById('studentNameInput');
