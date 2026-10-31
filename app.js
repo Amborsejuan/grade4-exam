@@ -1954,107 +1954,127 @@ function playViaLocalServerOrFallback(cleanText, styleToUse, allowRoboticFallbac
 // ==========================================================================
 // 🔊 智慧題目與選項朗讀引擎（支援中英雙角色切換朗讀）
 // ==========================================================================
-function playSegmentsViaBrowser(segments) {
-  if (!('speechSynthesis' in window) || !segments || segments.length === 0) {
-    stopAllSpeech();
-    return;
-  }
-  window.speechSynthesis.cancel();
-
-  let idx = 0;
-  function speakNext() {
-    if (idx >= segments.length) {
-      stopAllSpeech();
-      return;
-    }
-    const seg = segments[idx++];
-    const utter = new SpeechSynthesisUtterance(seg.text);
-    const isEng = (seg.style === 'english_teacher');
-    const activeKey = (seg.style === 'cinnamoroll' ? 'cinnamo' : seg.style);
-    const preset = voicePresets[activeKey] || voicePresets.cinnamo;
-
-    if (isEng) {
-      utter.lang = 'en-US';
-      utter.pitch = voicePresets.english_teacher.pitch;
-      utter.rate = voicePresets.english_teacher.rate;
-    } else {
-      utter.lang = 'zh-TW';
-      utter.pitch = preset.pitch;
-      utter.rate = preset.rate;
-    }
-    const matchedVoice = pickBestBrowserVoice(activeKey, isEng);
-    if (matchedVoice) {
-      utter.voice = matchedVoice;
-      utter.lang = matchedVoice.lang;
-    }
-
-    utter.onend = () => speakNext();
-    utter.onerror = (e) => {
-      console.warn('Speech segment error:', e);
-      speakNext();
-    };
-
-    window.speechSynthesis.speak(utter);
-  }
-
-  speakNext();
-}
-
 function playSpeechSegments(segments) {
   if (!segments || segments.length === 0) return;
   stopAllSpeech();
 
-  if (hasLocalTtsServer) {
-    let currentIdx = 0;
-    function playNextServerSegment() {
-      if (currentIdx >= segments.length) {
-        stopAllSpeech();
-        return;
-      }
-      const seg = segments[currentIdx++];
-      const ttsBase = IS_STATIC_CLOUD ? 'http://127.0.0.1:8080' : API_BASE;
-      const audioUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(seg.text)}&style=${seg.style}`;
-
-      if (IS_STATIC_CLOUD) {
-        fetch(audioUrl)
-          .then(res => {
-            if (!res.ok) throw new Error('TTS error');
-            return res.blob();
-          })
-          .then(blob => {
-            const blobUrl = URL.createObjectURL(blob);
-            const audio = new Audio(blobUrl);
-            currentAudio = audio;
-            audio.onended = () => {
-              URL.revokeObjectURL(blobUrl);
-              playNextServerSegment();
-            };
-            audio.onerror = () => {
-              URL.revokeObjectURL(blobUrl);
-              playSegmentsViaBrowser(segments.slice(currentIdx - 1));
-            };
-            audio.play().catch(() => {
-              URL.revokeObjectURL(blobUrl);
-              playSegmentsViaBrowser(segments.slice(currentIdx - 1));
-            });
-          })
-          .catch(() => {
-            hasLocalTtsServer = false;
-            playSegmentsViaBrowser(segments.slice(currentIdx - 1));
-          });
-      } else {
-        const audio = new Audio(audioUrl);
-        currentAudio = audio;
-        audio.onended = () => playNextServerSegment();
-        audio.onerror = () => playSegmentsViaBrowser(segments.slice(currentIdx - 1));
-        audio.play().catch(() => playSegmentsViaBrowser(segments.slice(currentIdx - 1)));
-      }
+  let segIdx = 0;
+  function nextSegment() {
+    if (segIdx >= segments.length) {
+      stopAllSpeech();
+      return;
     }
-    playNextServerSegment();
+    const seg = segments[segIdx++];
+
+    // 1. 若該段落有對應題號 (例如題幹)，優先直接播放預錄好的 Edge-TTS 原聲 MP3 音檔！
+    // 這樣平板（iPad/iPhone）在靜態雲端無本機伺服器時，也能 100% 播放大耳狗原聲音檔，與電腦完全一模一樣！
+    if (seg.qId) {
+      const prebuiltUrl = `audio_cache/q_${seg.style}_${seg.qId}.mp3`;
+      const audio = new Audio(prebuiltUrl);
+      currentAudio = audio;
+      audio.onended = () => {
+        nextSegment();
+      };
+      audio.onerror = () => {
+        playSingleSegmentOrFallback(seg, () => nextSegment());
+      };
+      audio.play().catch(() => {
+        playSingleSegmentOrFallback(seg, () => nextSegment());
+      });
+      return;
+    }
+
+    // 2. 無靜態音檔（例如隨機洗牌後的動態選項），使用 TTS / 瀏覽器原生語音朗讀
+    playSingleSegmentOrFallback(seg, () => nextSegment());
+  }
+
+  nextSegment();
+}
+
+function playSingleSegmentOrFallback(seg, onComplete) {
+  if (hasLocalTtsServer) {
+    const ttsBase = IS_STATIC_CLOUD ? 'http://127.0.0.1:8080' : API_BASE;
+    const audioUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(seg.text)}&style=${seg.style}`;
+
+    if (IS_STATIC_CLOUD) {
+      fetch(audioUrl)
+        .then(res => {
+          if (!res.ok) throw new Error('TTS error');
+          return res.blob();
+        })
+        .then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          const audio = new Audio(blobUrl);
+          currentAudio = audio;
+          audio.onended = () => {
+            URL.revokeObjectURL(blobUrl);
+            if (onComplete) onComplete();
+          };
+          audio.onerror = () => {
+            URL.revokeObjectURL(blobUrl);
+            speakSingleUtterance(seg, onComplete);
+          };
+          audio.play().catch(() => {
+            URL.revokeObjectURL(blobUrl);
+            speakSingleUtterance(seg, onComplete);
+          });
+        })
+        .catch(() => {
+          hasLocalTtsServer = false;
+          speakSingleUtterance(seg, onComplete);
+        });
+      return;
+    }
+
+    const audio = new Audio(audioUrl);
+    currentAudio = audio;
+    audio.onended = () => { if (onComplete) onComplete(); };
+    audio.onerror = () => speakSingleUtterance(seg, onComplete);
+    audio.play().catch(() => speakSingleUtterance(seg, onComplete));
     return;
   }
 
-  playSegmentsViaBrowser(segments);
+  speakSingleUtterance(seg, onComplete);
+}
+
+function speakSingleUtterance(seg, onComplete) {
+  if (!('speechSynthesis' in window)) {
+    if (onComplete) onComplete();
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(seg.text);
+  const isEng = (seg.style === 'english_teacher');
+  const activeKey = (seg.style === 'cinnamoroll' ? 'cinnamo' : seg.style);
+  const preset = voicePresets[activeKey] || voicePresets.cinnamo;
+
+  if (isEng) {
+    utter.lang = 'en-US';
+    utter.pitch = voicePresets.english_teacher.pitch;
+    utter.rate = voicePresets.english_teacher.rate;
+  } else {
+    utter.lang = 'zh-TW';
+    utter.pitch = preset.pitch;
+    utter.rate = preset.rate;
+  }
+  const matchedVoice = pickBestBrowserVoice(activeKey, isEng);
+  if (matchedVoice) {
+    utter.voice = matchedVoice;
+    utter.lang = matchedVoice.lang;
+  }
+
+  utter.onend = () => {
+    if (onComplete) onComplete();
+  };
+  utter.onerror = () => {
+    if (onComplete) onComplete();
+  };
+
+  try {
+    window.speechSynthesis.speak(utter);
+  } catch (e) {
+    console.error('Speech synthesis error:', e);
+    if (onComplete) onComplete();
+  }
 }
 
 function readQuestion(qId) {
@@ -2086,11 +2106,11 @@ function readQuestion(qId) {
     // 判斷題幹是否含有中文
     const stemHasChinese = /[\u4e00-\u9fa5]/.test(cleanStem);
     if (stemHasChinese) {
-      // 中文題幹：使用大耳狗語音親切朗讀
-      segments.push({ text: cleanStem, style: chineseVoiceStyle });
+      // 中文題幹：使用大耳狗語音親切朗讀（帶上 qId 優先直接命中預錄的 Edge-TTS 原聲 MP3 音檔）
+      segments.push({ text: cleanStem, style: chineseVoiceStyle, qId: q.id });
     } else {
       // 純英文題幹：使用美式英語老師語音道地朗讀
-      segments.push({ text: cleanStem, style: 'english_teacher' });
+      segments.push({ text: cleanStem, style: 'english_teacher', qId: q.id });
     }
 
     // 2. 組合目前畫面上洗牌後的選項，讓語音與畫面看到的 A, B, C, D 100% 吻合！
