@@ -581,7 +581,7 @@ function generateRandomExam(isNewPaper = true) {
 
   if (isNewPaper) {
     const cfg = SUBJECT_CONFIGS[currentSubject];
-    readAloud(`已為${getStudentName()}隨機抽出了一份全新的 ${cfg.name} 試卷！加油喔！`, `__new_paper_${currentSubject}`);
+    readAloud(`已為${getStudentName()}隨機抽出了一份全新的 ${cfg.name} 試卷！加油喔！`, `new_paper_${currentSubject}`);
   }
 }
 
@@ -769,18 +769,23 @@ function submitExam() {
 
   let praise = "";
   let spokenPraise = "";
+  let praiseTier = "low";
   if (finalScore === 100) {
     praise = "太神啦！100 分滿分大天才！大耳狗給你 100 顆大星星！🌟☁️";
     spokenPraise = "滿分一百分耶！太神啦！大耳狗給你一百顆大星星！";
+    praiseTier = "100";
   } else if (finalScore >= 90) {
     praise = "太厲害啦！高分通過！大耳狗幫你用力拍拍手！🌟☁️";
     spokenPraise = "表現超級棒！離滿分只差一點點囉！";
+    praiseTier = "90";
   } else if (finalScore >= 75) {
     praise = "表現非常優秀！把錯的幾題看懂訂正，段考就穩拿高分囉！💪";
     spokenPraise = "表現非常優秀！把錯的題目看懂訂正就更完美囉！";
+    praiseTier = "75";
   } else {
     praise = "別氣餒！多刷幾次隨機試卷，大耳狗陪你把觀念徹底弄懂！🌈";
     spokenPraise = "繼續加油別氣餒，大耳狗陪你把觀念徹底弄懂喔！";
+    praiseTier = "low";
   }
   document.getElementById('certPraise').innerText = praise;
 
@@ -813,7 +818,7 @@ function submitExam() {
   }
   const scoreAnnouncement = `恭喜${studentName}小朋友完成${cfg.name}測驗！總共答對 ${correctQuestions.length} 題，得到 ${finalScore} 分！${spokenPraise}${badgeSpeech}`;
   setTimeout(() => {
-    readAloud(scoreAnnouncement);
+    readAloud(scoreAnnouncement, `praise_${praiseTier}`);
   }, 250);
 }
 
@@ -1522,7 +1527,7 @@ function startMistakePractice() {
   }));
 
   renderExam();
-  readAloud("已啟動錯題消滅特訓！把這些容易混淆的題目一一擊破吧！");
+  readAloud("已啟動錯題消滅特訓！把這些容易混淆的題目一一擊破吧！", "mistake_drill");
 }
 
 // ==========================================================================
@@ -1808,7 +1813,7 @@ function toggleQuestionVoice() {
       : ((lastActiveVoiceKey && lastActiveVoiceKey !== 'mute') ? lastActiveVoiceKey : 'cinnamo');
     applyVoicePreset(restoreKey, false);
     updateVoiceMasterSwitchUI();
-    readAloud(currentSubject === 'english' ? "Voice reading is now turned on!" : "題目語音朗讀已開啟！");
+    readAloud(currentSubject === 'english' ? "Voice reading is now turned on!" : "題目語音朗讀已開啟！", "voice_on");
   }
 }
 
@@ -1935,8 +1940,8 @@ function playViaLocalServerOrFallback(cleanText, styleToUse, allowRoboticFallbac
   }
 }
 
-function readAloud(text, targetQId = null) {
-  if (!isVoiceEnabled || currentVoiceKey === 'mute') return;
+function readAloud(text, targetQId = null, forcePlay = false) {
+  if (!forcePlay && (!isVoiceEnabled || currentVoiceKey === 'mute')) return;
   stopAllSpeech();
 
   // 保留數字與小數點（原本的 \d 會把分數與題目數字全部刪光導致沒唸出幾分），僅過濾題號圓圈與填空底線
@@ -1961,15 +1966,18 @@ function readAloud(text, targetQId = null) {
     }
   }
 
-  let styleToUse = currentVoiceKey;
+  let styleToUse = (currentVoiceKey && currentVoiceKey !== 'mute')
+    ? currentVoiceKey
+    : ((lastActiveVoiceKey && lastActiveVoiceKey !== 'mute') ? lastActiveVoiceKey : 'cinnamo');
+
   if (isMostlyEnglish(cleanText)) {
     styleToUse = 'english_teacher';
-  } else if (styleToUse === 'english_teacher') {
+  } else if (styleToUse === 'english_teacher' && !(targetQId && String(targetQId).startsWith('cheer_'))) {
     // 當唸中文成績播報或中文題目時，若原本在美語老師模式，自動以大耳狗中文語音播報才不會跳過中文字
     styleToUse = 'cinnamo';
   }
 
-  // 1. 若為題庫題目（帶有題號 targetQId），優先直接播放預錄好的 Edge-TTS 原聲 MP3（與試聽語音 100% 相同且零延遲！）
+  // 1. 若帶有預錄語音代號 targetQId（包含全部 406 題庫題目、右下角大耳狗加油打氣 cheer_0..4、換卷播報等），優先直接播放 Edge-TTS 原聲 MP3！
   if (targetQId && !isInternalTag && !String(targetQId).startsWith('dyn_') && !String(targetQId).startsWith('ai_')) {
     const prebuiltUrl = `audio_cache/q_${styleToUse}_${targetQId}.mp3`;
     const qAudio = new Audio(prebuiltUrl);
@@ -2067,6 +2075,7 @@ function fallbackLocalTTS(cleanText, styleKey = null) {
 // ==========================================================================
 // 🐶 雲朵小夥伴互動打氣
 // ==========================================================================
+let cheerBubbleTimer = null;
 function cheerUp() {
   const sName = getStudentName();
   const dynamicCheerQuotes = [
@@ -2076,9 +2085,22 @@ function cheerUp() {
     "認識國語、數學、英語、社會和自然，真是太厲害了！",
     `每一題都是大耳狗出的考驗，${sName}一定能順利過關！`
   ];
-  const q = dynamicCheerQuotes[Math.floor(Math.random() * dynamicCheerQuotes.length)];
-  document.getElementById('companionBubble').innerText = q;
-  readAloud(q);
+  const idx = Math.floor(Math.random() * dynamicCheerQuotes.length);
+  const q = dynamicCheerQuotes[idx];
+  const bubbleEl = document.getElementById('companionBubble');
+  if (bubbleEl) bubbleEl.innerText = q;
+
+  const btnEl = document.querySelector('.floating-cinnamo-btn');
+  if (btnEl) {
+    btnEl.classList.add('show-bubble');
+    if (cheerBubbleTimer) clearTimeout(cheerBubbleTimer);
+    cheerBubbleTimer = setTimeout(() => {
+      btnEl.classList.remove('show-bubble');
+    }, 3500);
+  }
+
+  // 點擊右下角大耳狗加油按鈕時，直接播放對應配音風格的 Edge-TTS 原聲加油語音（即使上方關閉了「題目語音」，主動點大耳狗仍會發出鼓勵語音！）
+  readAloud(q, `cheer_${idx}`, true);
   playCuteSound('click');
   confetti({ particleCount: 30, spread: 65, origin: { y: 0.85, x: 0.9 } });
 }
