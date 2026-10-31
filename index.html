@@ -1078,8 +1078,8 @@
         flex: 1;
         min-width: 0;
         width: 100% !important;
-        font-size: 0.84rem;
-        padding: 6px 8px;
+        font-size: 0.78rem;
+        padding: 5px 4px;
         border-radius: 10px;
       }
       .randomize-btn {
@@ -1494,18 +1494,18 @@
       <div class="control-item">
         <span>📝 題數：</span>
         <select class="version-select" id="qCountSelector" onchange="onCountChange(this.value)">
-          <option value="10" selected>10 題精華速測</option>
-          <option value="15">15 題標準段考</option>
-          <option value="20">20 題大滿貫挑戰</option>
+          <option value="10" selected>10 題速測</option>
+          <option value="15">15 題標準</option>
+          <option value="20">20 題挑戰</option>
         </select>
       </div>
       <div class="control-item">
         <span>⏱️ 模式：</span>
         <select class="version-select" id="timerModeSelector" onchange="onTimerModeChange(this.value)">
-          <option value="0" selected>🌱 自由不限時</option>
-          <option value="10">⏰ 10分鐘速測</option>
-          <option value="15">⏰ 15分鐘模擬考</option>
-          <option value="20">⏰ 20分鐘段考標準</option>
+          <option value="0" selected>🌱 不限時</option>
+          <option value="10">⏰ 10分鐘</option>
+          <option value="15">⏰ 15分鐘</option>
+          <option value="20">⏰ 20分鐘</option>
         </select>
       </div>
       <button class="randomize-btn" onclick="generateRandomExam(true)">
@@ -1529,7 +1529,7 @@
           <span id="voiceMasterIcon">🔊</span> <span id="voiceMasterText">題目語音：開啟</span>
         </button>
         <button class="reset-btn" id="voiceToggleBtn" style="padding: 6px 14px; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;" onclick="toggleVoicePanel()">
-          🎙️ <span id="currentVoiceLabel">大耳狗萌萌音</span> ▾
+          <span id="currentVoiceLabel">🐶 大耳狗萌萌音</span> ▾
         </button>
         <button class="reset-btn" id="voiceTestBtn" style="padding: 6px 12px; font-size: 0.92rem; background: #eaf4fd;" onclick="testCurrentVoice()" title="試聽目前配音">
           🎧 試聽
@@ -1960,11 +1960,11 @@
     </div>
   </div>
 
-  <script src="question_bank.js?v=20261031_8"></script>
-  <script src="question_bank_extra.js?v=20261031_8"></script>
-  <script src="question_bank_v2.js?v=20261031_8"></script>
-  <script src="question_bank_melances.js?v=20261031_8"></script>
-  <script src="app.js?v=20261031_8"></script>
-  <script src="scope.js?v=20261031_8"></script>
+  <script src="question_bank.js?v=20261031_9"></script>
+  <script src="question_bank_extra.js?v=20261031_9"></script>
+  <script src="question_bank_v2.js?v=20261031_9"></script>
+  <script src="question_bank_melances.js?v=20261031_9"></script>
+  <script src="app.js?v=20261031_9"></script>
+  <script src="scope.js?v=20261031_9"></script>
 </body>
 </html>

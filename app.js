@@ -557,15 +557,21 @@ function generateRandomExam(isNewPaper = true) {
     }
   }
 
-  // 選項順序洗牌，防止學生死背選項代號
+  // 選項順序洗牌，防止學生死背選項代號（去除原本重複的 ①②③④ 前綴，統一由左側 A/B/C/D 圓圈顯示）
   currentExamQuestions = sampled.map((q, idx) => {
     const qCopy = { ...q, displayNum: idx + 1 };
     if (qCopy.type === 'mc' && qCopy.options && qCopy.options.length > 0) {
-      const cleanOpts = qCopy.options.map(o => o.replace(/^[①②③④\d\.\s]+/, ''));
+      const cleanOpts = qCopy.options.map(o =>
+        String(o).replace(/^\s*(?:[①②③④⑤]|[\(\（][1-4A-Da-d①-④][\)\）]|[1-4A-Da-d][\.\、\)\）])\s*/, '')
+      );
       const cleanCorrect = cleanOpts[qCopy.answer];
       const shuffledClean = shuffleArray(cleanOpts);
-      qCopy.options = shuffledClean.map((o, optIdx) => `①②③④`[optIdx] + ' ' + o);
+      qCopy.options = shuffledClean;
       qCopy.answer = shuffledClean.indexOf(cleanCorrect);
+      const ansLetter = ['A', 'B', 'C', 'D'][qCopy.answer] || (qCopy.answer + 1);
+      if (qCopy.explain) {
+        qCopy.explain = qCopy.explain.replace(/【解析\s*[：:]\s*[①②③④1-4A-Da-d\(\)（）\s]+】/, `【解析：(${ansLetter})】`);
+      }
     }
     return qCopy;
   });
@@ -636,12 +642,15 @@ function renderExam() {
     } else {
       optionsHtml = `
         <div class="mc-options-list">
-          ${q.options.map((opt, optIdx) => `
+          ${q.options.map((opt, optIdx) => {
+            const cleanOptText = String(opt).replace(/^\s*(?:[①②③④⑤]|[\(\（][1-4A-Da-d①-④][\)\）]|[1-4A-Da-d][\.\、\)\）])\s*/, '');
+            return `
             <div class="mc-option-card" id="opt_${q.id}_${optIdx}" onclick="selectMC('${q.id}', ${optIdx})">
               <div class="mc-radio-circle">${['A','B','C','D'][optIdx] || optIdx+1}</div>
-              <div class="mc-option-text">${opt}</div>
+              <div class="mc-option-text">${cleanOptText}</div>
             </div>
-          `).join('')}
+          `;
+          }).join('')}
         </div>
       `;
     }
