@@ -35,21 +35,40 @@ let currentTool = 'pen'; // 'pen' | 'eraser'
 let lastX = 0;
 let lastY = 0;
 
-// 🎙️ 配音設定
+// 🎙️ 配音設定（支援後端 Edge-TTS 真人神經語音 與 雲端版多聲線/音調/語速自動分流）
 const voicePresets = {
-  'cinnamo': { name: '大耳狗萌萌音', icon: '🐶', pitch: 1.45, rate: 1.08, preferFemale: true },
-  'gentle': { name: '臺灣溫柔姐姐', icon: '🌸', pitch: 1.15, rate: 0.95, preferFemale: true },
-  'energetic': { name: '臺灣陽光夥伴', icon: '👦', pitch: 1.25, rate: 1.15, preferFemale: false },
-  'teacher': { name: '臺灣知性老師', icon: '👩‍🏫', pitch: 1.0, rate: 0.92, preferFemale: true },
-  'english_teacher': { name: '美式英語老師', icon: '🇺🇸', pitch: 1.0, rate: 1.0, preferFemale: true },
-  'mute': { name: '靜音模式', icon: '🔇', pitch: 1.0, rate: 1.0, preferFemale: false }
+  'cinnamo': {
+    name: '大耳狗萌萌音', icon: '🐶', pitch: 1.55, rate: 1.12, preferFemale: true,
+    keywords: ['Xiaoxiao', '曉曉', '晓晓', 'HsiaoChen', '曉臻', 'Meijia', '美佳']
+  },
+  'gentle': {
+    name: '臺灣溫柔姐姐', icon: '🌸', pitch: 1.12, rate: 0.95, preferFemale: true,
+    keywords: ['HsiaoChen', '曉臻', 'Yating', '雅婷', 'Meijia', '美佳', 'Google 國語']
+  },
+  'energetic': {
+    name: '臺灣陽光夥伴', icon: '👦', pitch: 0.76, rate: 1.16, preferFemale: false,
+    keywords: ['YunJhe', '雲哲', 'Zhiwei', '志威', 'Kangkang', '康康', 'Yunxi', '云希', 'Danny', 'Male']
+  },
+  'teacher': {
+    name: '臺灣知性老師', icon: '👩‍🏫', pitch: 0.88, rate: 0.86, preferFemale: true,
+    keywords: ['HsiaoYu', '曉雨', 'Hanhan', '涵涵', 'Ting-Ting', 'Tingting', 'Google 國語']
+  },
+  'english_teacher': {
+    name: '美式英語老師', icon: '🇺🇸', pitch: 1.05, rate: 0.96, preferFemale: true,
+    keywords: ['Jenny', 'Aria', 'Samantha', 'Google US English', 'Zira', 'Siri']
+  },
+  'mute': {
+    name: '靜音模式', icon: '🔇', pitch: 1.0, rate: 1.0, preferFemale: false,
+    keywords: []
+  }
 };
 let currentVoiceKey = 'cinnamo';
 let lastActiveVoiceKey = 'cinnamo';
 let isVoiceEnabled = localStorage.getItem('lunlun_voice_enabled') !== 'false';
 let currentStudentName = (localStorage.getItem('lunlun_student_name') || '綸綸').trim() || '綸綸';
-let customPitch = 1.45;
-let customRate = 1.08;
+let customPitch = 1.55;
+let customRate = 1.12;
+let hasLocalTtsServer = !IS_STATIC_CLOUD;
 
 function getStudentName() {
   return (currentStudentName || '綸綸').trim() || '小朋友';
@@ -1797,6 +1816,10 @@ function applyVoicePreset(key, playSample = true) {
   const preset = voicePresets[key];
   if (!preset) return;
 
+  // 重要：切換配音風格時同步更新音調 (customPitch) 與語速 (customRate)！
+  customPitch = preset.pitch;
+  customRate = preset.rate;
+
   if (key === 'mute') {
     isVoiceEnabled = false;
     localStorage.setItem('lunlun_voice_enabled', 'false');
@@ -1879,9 +1902,10 @@ function readAloud(text, targetQId = null) {
     styleToUse = 'cinnamoroll';
   }
 
-  // 優先使用本地後端高品質 Edge-TTS（若為 24 小時雲端公開網站則直接使用瀏覽器內建語音引擎，零延遲）
-  if (!IS_STATIC_CLOUD && window.location.protocol.startsWith('http')) {
-    const audioUrl = `${API_BASE}/api/tts?text=${encodeURIComponent(cleanText)}&style=${styleToUse}`;
+  // 優先使用本地後端高品質 Edge-TTS（若本機 8080 伺服器有開，連 GitHub Pages 也能自動調用；外部設備則使用多聲線/音調分流的瀏覽器語音）
+  if (hasLocalTtsServer) {
+    const ttsBase = IS_STATIC_CLOUD ? 'http://127.0.0.1:8080' : API_BASE;
+    const audioUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(cleanText)}&style=${styleToUse}`;
     const audio = new Audio(audioUrl);
     currentAudio = audio;
 
@@ -1889,32 +1913,80 @@ function readAloud(text, targetQId = null) {
       stopAllSpeech();
     };
     audio.onerror = () => {
-      fallbackLocalTTS(cleanText);
+      if (IS_STATIC_CLOUD) hasLocalTtsServer = false;
+      fallbackLocalTTS(cleanText, styleToUse);
     };
 
     audio.play().catch(err => {
       console.warn('AI TTS playback failed, falling back to local speech:', err);
-      fallbackLocalTTS(cleanText);
+      if (IS_STATIC_CLOUD) hasLocalTtsServer = false;
+      fallbackLocalTTS(cleanText, styleToUse);
     });
   } else {
-    fallbackLocalTTS(cleanText);
+    fallbackLocalTTS(cleanText, styleToUse);
   }
 }
 
-function fallbackLocalTTS(cleanText) {
+function pickBestBrowserVoice(styleKey, isEng) {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices() || [];
+  if (voices.length === 0) return null;
+
+  const preset = voicePresets[styleKey] || voicePresets[currentVoiceKey] || voicePresets.cinnamo;
+  const keywords = preset.keywords || [];
+
+  if (isEng || styleKey === 'english_teacher') {
+    const enVoices = voices.filter(v => /^en[-_]/i.test(v.lang));
+    for (const kw of voicePresets.english_teacher.keywords) {
+      const found = enVoices.find(v => v.name.toLowerCase().includes(kw.toLowerCase()));
+      if (found) return found;
+    }
+    return enVoices[0] || null;
+  }
+
+  const zhVoices = voices.filter(v => /zh|cmn/i.test(v.lang));
+  if (zhVoices.length === 0) return null;
+
+  // 1. 先依各角色專屬關鍵字尋找對應系統語音（如 Edge 內建的 曉臻/雲哲/曉雨/曉曉 或 Windows 的 Hanhan/Zhiwei）
+  for (const kw of keywords) {
+    const found = zhVoices.find(v => v.name.toLowerCase().includes(kw.toLowerCase()));
+    if (found) return found;
+  }
+
+  // 2. 若系統有多個台灣/中文語音，依角色索引分派不同聲線，避免全部共用同一個聲音
+  const twVoices = zhVoices.filter(v => /TW/i.test(v.lang));
+  const pool = twVoices.length > 0 ? twVoices : zhVoices;
+  const roleIdxMap = { cinnamo: 0, gentle: 1, energetic: pool.length - 1, teacher: Math.min(2, pool.length - 1) };
+  const idx = roleIdxMap[styleKey] !== undefined ? (roleIdxMap[styleKey] % pool.length) : 0;
+  return pool[idx];
+}
+
+function fallbackLocalTTS(cleanText, styleKey = null) {
   if (!('speechSynthesis' in window)) {
     stopAllSpeech();
     return;
   }
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(cleanText);
-  if (isMostlyEnglish(cleanText)) {
+  const isEng = isMostlyEnglish(cleanText);
+  const activeKey = styleKey === 'cinnamoroll' ? 'cinnamo' : (styleKey || currentVoiceKey);
+  const preset = voicePresets[activeKey] || voicePresets[currentVoiceKey] || voicePresets.cinnamo;
+
+  if (isEng) {
     utter.lang = 'en-US';
+    utter.pitch = voicePresets.english_teacher.pitch;
+    utter.rate = voicePresets.english_teacher.rate;
   } else {
     utter.lang = 'zh-TW';
+    utter.pitch = preset.pitch;
+    utter.rate = preset.rate;
   }
-  utter.pitch = customPitch;
-  utter.rate = customRate;
+
+  const matchedVoice = pickBestBrowserVoice(activeKey, isEng);
+  if (matchedVoice) {
+    utter.voice = matchedVoice;
+    utter.lang = matchedVoice.lang;
+  }
 
   utter.onend = () => {
     stopAllSpeech();
@@ -2329,6 +2401,20 @@ async function crawlMelancesByPublisher(fileId = '', ansId = '', title = '') {
 // 🚀 頁面初始化
 // ==========================================================================
 window.addEventListener('DOMContentLoaded', async () => {
+  // 預先喚醒瀏覽器內建多語音清單 (Web Speech API)
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
+  }
+  // 若開啟雲端網址但本機剛好有啟動 server.py，自動啟用本機高品質 Edge-TTS 真人語音包
+  if (IS_STATIC_CLOUD) {
+    fetch('http://127.0.0.1:8080/api/config').then(r => {
+      if (r.ok) hasLocalTtsServer = true;
+    }).catch(() => {});
+  }
+
   const nameInput = document.getElementById('studentNameInput');
   if (nameInput) nameInput.value = currentStudentName;
   onStudentNameChange(currentStudentName, false);
