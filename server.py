@@ -492,7 +492,22 @@ def parse_melances_exam_pair(q_text, a_text, subject, publisher, stage, school_t
     ans_map = {'1': 0, '①': 0, 'A': 0, '2': 1, '②': 1, 'B': 1, '3': 2, '③': 2, 'C': 2, '4': 3, '④': 3, 'D': 3}
     mc_ans = [ans_map.get(x, 0) for x in mc_ans_raw]
 
-    clean_q = re.sub(r'[\(（]\s*[1-4①②③④○◯〇OＯX✕×╳]\s*[\)）]', '( )', q_text)
+    default_unit = DEFAULT_UNITS_MAP.get((subject, stage), 'lang')
+    results = []
+    idx_mc = 0
+    idx_tf = 0
+
+    # 1. 先按大題結構（一、是非題 / 二、選擇題）分區解析，避免是非題被整批誤吞入選擇題題幹
+    sections = re.split(r'(?:\n|^)\s*([一二三四五六七八九十壹貳參肆伍陸柒]+[、\.\s]*(?:是非|選擇)[^\n]*)', q_text or '')
+    
+    # 若無明顯大題標題，作為整體解析
+    sec_pairs = []
+    if len(sections) >= 3:
+        for si in range(1, len(sections), 2):
+            sec_pairs.append((sections[si], sections[si + 1] if si + 1 < len(sections) else ''))
+    else:
+        sec_pairs.append(('綜合', q_text or ''))
+
     opt_re = re.compile(
         r'(?:①|\(1\)|（1）|1[\.、]|\(A\)|A[\.、])\s*(.+?)\s*'
         r'(?:②|\(2\)|（2）|2[\.、]|\(B\)|B[\.、])\s*(.+?)\s*'
@@ -500,59 +515,62 @@ def parse_melances_exam_pair(q_text, a_text, subject, publisher, stage, school_t
         r'(?:④|\(4\)|（4）|4[\.、]|\(D\)|D[\.、])\s*([^\n○①②③④\(（1-9]+)',
         re.S
     )
-    default_unit = DEFAULT_UNITS_MAP.get((subject, stage), 'lang')
-    results = []
 
-    raw_items = re.split(r'(?:^|\n)\s*(?:[\(（]\s*[\)）]\s*(\d+)[\.、\s]*|(\d+)[\.、\s]*[\(（]\s*[\)）])', clean_q)
-    idx_mc = 0
-    idx_tf = 0
-    i = 1
-    while i < len(raw_items):
-        num = raw_items[i] or raw_items[i + 1]
-        body = (raw_items[i + 2] if i + 2 < len(raw_items) else '').strip()
-        i += 3
-        if not body or len(body) < 6:
-            continue
-        body = re.split(r'\n\s*[一二三四五六七八九十]+、', body)[0].strip()
+    for sec_title, sec_body in sec_pairs:
+        is_tf_section = '是非' in sec_title
+        is_mc_section = '選擇' in sec_title
 
-        om = opt_re.search(body)
-        if om:
-            stem = body[:om.start()].strip()
-            stem = re.sub(r'\s+', ' ', stem)
-            opts = [re.sub(r'\s+', ' ', om.group(k).strip()) for k in range(1, 5)]
-            if len(stem) < 4 or any(len(o) < 1 for o in opts):
+        # 分割單題
+        items = re.split(r'(?:\n|^)\s*(?:[\(（]\s*[\)）]\s*(\d+)[\.、\s]*|(\d+)[\.、\s]*[\(（]\s*[\)）]|(?:[\(（]\s*[○◯〇OＯX✕×╳1-4①-④A-D\s]*[\)）]\s*)?(\d+)[\.、\s]+)', sec_body)
+        i = 1
+        while i < len(items):
+            q_num = items[i] or items[i + 1] or items[i + 2] if i + 2 < len(items) else ''
+            body = (items[i + 3] if i + 3 < len(items) else '').strip()
+            i += 4
+            if not body or len(body) < 5:
                 continue
-            if any(bad in stem for bad in ['右圖', '下圖', '上圖', '附圖', '如圖']):
-                continue
-            ans_idx = mc_ans[idx_mc] if idx_mc < len(mc_ans) else 0
-            idx_mc += 1
-            results.append({
-                'id': f"mel_live_{subject}_{publisher}_{stage}_{random.randint(10000,99999)}_{len(results)+1}",
-                'stage': stage,
-                'ver': publisher,
-                'unit': default_unit,
-                'type': 'mc',
-                'text': f"【{publisher}版・{school_title}】{stem}",
-                'options': [f"{'①②③④'[k]} {opts[k]}" for k in range(4)],
-                'answer': ans_idx,
-                'explain': f"【米蘭題庫真題解析】本題出自「{school_title}（{publisher}版）」，標準解答為 {'①②③④'[ans_idx]} {opts[ans_idx]}。"
-            })
-        elif len(body) < 120 and ('？' not in body and '?' not in body) and not re.search(r'[①②③④]', body):
-            stem = re.sub(r'\s+', ' ', body).split('\n')[0].strip()
-            if len(stem) >= 8 and not any(bad in stem for bad in ['右圖', '下圖', '附圖', '如圖', '填代號']):
-                ans_char = tf_ans[idx_tf] if idx_tf < len(tf_ans) else '○'
-                is_true = ans_char in '○◯〇OＯ'
-                idx_tf += 1
+
+            # 檢查是否為選擇題（帶有 4 個選項）
+            om = opt_re.search(body)
+            if om and not is_tf_section:
+                stem = body[:om.start()].strip()
+                stem = re.sub(r'^(?:[一二三四五六七八九十]+[、\.\s]*[^\n]*\n*)+', '', stem)
+                stem = re.sub(r'[\(（]\s*[\)）]', '', stem).strip()
+                stem = re.sub(r'\s+', ' ', stem)
+                opts = [re.sub(r'^\s*(?:[①②③④⑤]|[\(\（][1-4A-Da-d①-④][\)\）]|[1-4A-Da-d][\.\、\)\）])\s*', '', om.group(k).strip()) for k in range(1, 5)]
+                if len(stem) < 4 or any(len(o) < 1 for o in opts) or any(bad in stem for bad in ['右圖', '下圖', '上圖', '附圖', '如圖']):
+                    continue
+                ans_idx = mc_ans[idx_mc] if idx_mc < len(mc_ans) else 0
+                idx_mc += 1
                 results.append({
                     'id': f"mel_live_{subject}_{publisher}_{stage}_{random.randint(10000,99999)}_{len(results)+1}",
                     'stage': stage,
                     'ver': publisher,
                     'unit': default_unit,
-                    'type': 'tf',
+                    'type': 'mc',
                     'text': f"【{publisher}版・{school_title}】{stem}",
-                    'answer': is_true,
-                    'explain': f"【米蘭題庫真題解析】本題出自「{school_title}（{publisher}版）」，標準解答為 {'⭕ 正確' if is_true else '❌ 錯誤'}。"
+                    'options': opts,
+                    'answer': ans_idx,
+                    'explain': f"【米蘭題庫真題解析】本題出自「{school_title}（{publisher}版）」，標準解答為第 {ans_idx + 1} 個選項「{opts[ans_idx]}」。"
                 })
+            elif is_tf_section or (len(body) < 130 and '？' not in body and '?' not in body and not re.search(r'[①②③④]', body)):
+                stem = re.sub(r'^(?:[一二三四五六七八九十]+[、\.\s]*[^\n]*\n*)+', '', body).strip()
+                stem = re.sub(r'[\(（]\s*[\)）]', '', stem).strip()
+                stem = re.sub(r'\s+', ' ', stem).split('\n')[0].strip()
+                if len(stem) >= 8 and not any(bad in stem for bad in ['右圖', '下圖', '附圖', '如圖', '填代號', '參考答案', '每題']):
+                    ans_char = tf_ans[idx_tf] if idx_tf < len(tf_ans) else '○'
+                    is_true = ans_char in '○◯〇OＯ'
+                    idx_tf += 1
+                    results.append({
+                        'id': f"mel_live_{subject}_{publisher}_{stage}_{random.randint(10000,99999)}_{len(results)+1}",
+                        'stage': stage,
+                        'ver': publisher,
+                        'unit': default_unit,
+                        'type': 'tf',
+                        'text': f"【{publisher}版・{school_title}】{stem}",
+                        'answer': is_true,
+                        'explain': f"【米蘭題庫真題解析】本題出自「{school_title}（{publisher}版）」，標準解答為 {'⭕ 正確' if is_true else '❌ 錯誤'}。"
+                    })
     return results
 
 def call_gemini_api(api_key, prompt, image_data=None, mime_type=None):
