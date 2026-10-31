@@ -952,14 +952,401 @@
       }
     }
 
+    .mel-filter-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
     @media (max-width: 768px) {
-      .container { padding: 12px 14px; }
-      h1.main-title { font-size: 1.45rem; }
-      .q-content { font-size: 1.1rem; }
-      .tf-btn { font-size: 1.18rem; padding: 12px 14px; }
-      .mc-option-card { padding: 12px 14px; }
-      .mc-option-text { font-size: 1.05rem; }
-      .subject-nav-grid { grid-template-columns: repeat(2, 1fr); }
+      .container {
+        padding: 8px 10px 86px 10px;
+      }
+      .sky-cloud {
+        display: none;
+      }
+      /* Compact Header & Top Tools */
+      .cinnamo-header {
+        padding: 14px 12px 12px 12px;
+        margin-bottom: 10px;
+        border-radius: 20px;
+        border-width: 2.5px;
+      }
+      .cinnamo-mascot {
+        width: 82px;
+        height: 56px;
+      }
+      .badge-tag {
+        font-size: 0.76rem;
+        padding: 3px 10px;
+        margin-bottom: 6px;
+      }
+      h1.main-title {
+        font-size: 1.22rem;
+        line-height: 1.32;
+        margin-bottom: 4px;
+      }
+      p.subtitle {
+        font-size: 0.82rem;
+        line-height: 1.38;
+        margin-bottom: 6px;
+      }
+      .top-tools-hub {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .top-tools-hub .tool-pill-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 7px 6px;
+        font-size: 0.8rem;
+        border-radius: 12px;
+        gap: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* 5 Subjects in 1 App-Style Row */
+      .subject-nav-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        margin-bottom: 8px;
+      }
+      .subject-tab-btn {
+        flex-direction: column;
+        padding: 8px 2px;
+        font-size: 0.78rem;
+        border-radius: 14px;
+        gap: 2px;
+        border-width: 2px;
+      }
+      .subject-tab-btn span {
+        font-size: 1.15rem;
+      }
+
+      /* 3 Stages in 1 Compact Row */
+      .stage-nav-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .stage-tab-btn {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 8px 4px;
+        gap: 2px;
+        border-radius: 14px;
+        border-width: 2px;
+      }
+      .stage-icon {
+        font-size: 1.2rem;
+      }
+      .stage-title {
+        font-size: 0.78rem;
+        line-height: 1.2;
+      }
+      .stage-desc {
+        display: none;
+      }
+
+      /* Clean 2-Column Exam Control Bar */
+      .exam-control-bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        padding: 10px 10px;
+        border-radius: 16px;
+        margin-bottom: 10px;
+      }
+      .control-item {
+        width: 100%;
+        justify-content: space-between;
+        gap: 4px;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+      #controlItemVersion {
+        grid-column: 1 / -1;
+      }
+      .control-item .version-select,
+      #studentNameInput {
+        flex: 1;
+        min-width: 0;
+        width: 100% !important;
+        font-size: 0.84rem;
+        padding: 6px 8px;
+        border-radius: 10px;
+      }
+      .randomize-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+        justify-content: center;
+        padding: 9px 14px;
+        font-size: 0.95rem;
+        border-radius: 12px;
+      }
+
+      /* Sticky Progress & Voice Controls Bar */
+      .sticky-stats {
+        flex-wrap: wrap;
+        padding: 8px 10px;
+        gap: 6px;
+        top: 4px;
+        border-radius: 16px;
+        margin-bottom: 12px;
+      }
+      .stats-text {
+        font-size: 0.84rem;
+      }
+      .progress-wrap {
+        margin: 0 6px;
+        min-width: 70px;
+      }
+      .progress-bar-bg {
+        height: 10px;
+      }
+      .timer-badge {
+        font-size: 0.82rem;
+        padding: 2px 8px;
+        margin-right: 0;
+      }
+      .voice-controls-row {
+        width: 100%;
+        display: flex !important;
+        gap: 5px !important;
+        justify-content: space-between;
+      }
+      #voiceMasterSwitchBtn,
+      #voiceToggleBtn,
+      #voiceTestBtn {
+        flex: 1;
+        justify-content: center;
+        padding: 5px 6px !important;
+        font-size: 0.78rem !important;
+        border-radius: 10px !important;
+        white-space: nowrap;
+      }
+
+      /* Voice Panel */
+      .voice-settings-card {
+        padding: 12px;
+        border-radius: 16px;
+      }
+      .voice-styles-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      /* Test Section & Questions */
+      .test-section {
+        padding: 12px 10px;
+        border-radius: 18px;
+        border-width: 2px;
+        margin-bottom: 16px;
+      }
+      .section-header {
+        gap: 8px !important;
+        margin-bottom: 12px !important;
+        padding-bottom: 10px !important;
+      }
+      .section-header-icon {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 1.1rem !important;
+      }
+      .section-header-title {
+        font-size: 1.02rem !important;
+        line-height: 1.3;
+      }
+      .section-header-sub {
+        font-size: 0.78rem !important;
+        line-height: 1.35;
+      }
+      .section-header-score {
+        font-size: 0.76rem !important;
+        padding: 2px 8px !important;
+      }
+      .question-block {
+        padding: 12px 10px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+      }
+      .q-top-row {
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .q-number {
+        width: 28px;
+        height: 28px;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .q-content {
+        font-size: 1.02rem;
+        line-height: 1.52;
+        word-break: break-word;
+      }
+      .tts-btn {
+        padding: 4px 8px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+      .tf-options-grid {
+        gap: 8px;
+      }
+      .tf-btn {
+        font-size: 1rem;
+        padding: 10px 8px;
+        border-radius: 14px;
+        border-width: 2px;
+        gap: 6px;
+      }
+      .mc-options-list {
+        gap: 8px;
+      }
+      .mc-option-card {
+        padding: 10px 12px;
+        border-radius: 14px;
+        gap: 10px;
+        border-width: 2px;
+      }
+      .mc-radio-circle {
+        width: 26px;
+        height: 26px;
+        font-size: 0.85rem;
+      }
+      .mc-option-text {
+        font-size: 0.98rem;
+        line-height: 1.45;
+        word-break: break-word;
+      }
+      .explanation-box {
+        padding: 10px 12px;
+        font-size: 0.92rem;
+        margin-top: 10px;
+      }
+
+      /* Bottom Submit & Reset Buttons */
+      .bottom-actions {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .bottom-actions .submit-exam-btn,
+      .bottom-actions .reset-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 13px 20px;
+        font-size: 1.1rem;
+      }
+
+      /* Compact Floating Buttons on Mobile */
+      .floating-scratchpad-btn {
+        bottom: 66px;
+        right: 12px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        gap: 4px;
+        box-shadow: 0 4px 14px rgba(220, 160, 40, 0.28);
+      }
+      .floating-cinnamo-btn {
+        bottom: 12px;
+        right: 12px;
+        padding: 6px 10px;
+        gap: 6px;
+        box-shadow: 0 4px 14px rgba(70, 130, 200, 0.25);
+      }
+      .companion-avatar {
+        width: 36px;
+        height: 26px;
+      }
+      .companion-text {
+        display: none;
+      }
+
+      /* Modals on Mobile */
+      .common-modal-overlay {
+        padding: 10px;
+        align-items: flex-start;
+      }
+      .modal-card-box {
+        padding: 18px 14px;
+        border-radius: 22px;
+        border-width: 4px;
+        margin: auto 0;
+        max-height: 92vh;
+        overflow-y: auto;
+      }
+      .modal-card-box h2 {
+        font-size: 1.25rem !important;
+        line-height: 1.35;
+      }
+      .certificate-ribbon {
+        font-size: 0.88rem;
+        padding: 5px 14px;
+      }
+      .mel-filter-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .mel-action-bar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .mel-action-bar .tool-pill-btn {
+        flex: 1;
+        justify-content: center;
+      }
+      .tab-pills-row {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .import-subtab-btn {
+        flex: 1;
+        min-width: 110px;
+        padding: 6px 8px;
+        font-size: 0.82rem;
+      }
+      .badges-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stage-title {
+        font-size: 0.74rem;
+      }
+      #voiceMasterSwitchBtn,
+      #voiceToggleBtn,
+      #voiceTestBtn {
+        font-size: 0.73rem !important;
+        padding: 5px 4px !important;
+      }
+      .floating-scratchpad-btn .scratchpad-label {
+        display: none;
+      }
+      .floating-scratchpad-btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.15rem;
+      }
+      .floating-cinnamo-btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+      }
     }
   </style>
 </head>
@@ -1100,7 +1487,7 @@
           <option value="all">🌟 全冊總複習 (整學期綜合)</option>
         </select>
       </div>
-      <div class="control-item">
+      <div class="control-item" id="controlItemVersion">
         <span>📚 版本：</span>
         <select class="version-select" id="versionSelector" onchange="onVersionChange(this.value)"></select>
       </div>
@@ -1137,7 +1524,7 @@
       <div class="timer-badge" id="examTimerDisplay">
         <span>⏳</span> <span id="timerCountdown">15:00</span>
       </div>
-      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <div class="voice-controls-row" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
         <button class="reset-btn" id="voiceMasterSwitchBtn" style="padding: 6px 14px; font-size: 0.92rem; font-weight: 900; background: #dcfce7; color: #166534; border: 2px solid #86efac; display: flex; align-items: center; gap: 5px;" onclick="toggleQuestionVoice()" title="一鍵開啟或關閉題目語音朗讀">
           <span id="voiceMasterIcon">🔊</span> <span id="voiceMasterText">題目語音：開啟</span>
         </button>
@@ -1221,8 +1608,8 @@
   </div>
 
   <!-- Floating Scratchpad Button -->
-  <div class="floating-scratchpad-btn" onclick="toggleScratchpad()">
-    <span>✏️</span> <span>手寫草稿紙</span>
+  <div class="floating-scratchpad-btn" onclick="toggleScratchpad()" title="開啟手寫草稿紙">
+    <span>✏️</span> <span class="scratchpad-label">手寫草稿紙</span>
   </div>
 
   <!-- Floating Companion -->
@@ -1484,7 +1871,7 @@
         <p style="color: #6a8aa7; font-size: 0.92rem;">系統已內建預爬各出版社共 <strong>196+ 道歷屆真題</strong>，您亦可隨時連線米蘭老師 Google 雲端題庫即時爬取指定出版社的新考卷！</p>
       </div>
 
-      <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+      <div class="mel-filter-grid">
         <div>
           <label style="font-weight: 900; color: #274d73; font-size: 0.9rem; display: block; margin-bottom: 4px;">📘 選擇科目：</label>
           <select id="melSubjectSelect" class="version-select" style="width: 100%; padding: 8px 10px;" onchange="onMelancesFilterChange()">
@@ -1512,7 +1899,7 @@
         </div>
       </div>
 
-      <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 10px 14px;">
+      <div class="mel-action-bar" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 10px 14px;">
         <div style="font-size: 0.92rem; color: #166534; font-weight: 700;" id="melBuiltInCountLabel">
           📦 當前版本內建真題數：載入中...
         </div>
@@ -1529,7 +1916,7 @@
       <div id="melCrawlStatusBox" style="display: none; margin-top: 10px; padding: 10px 14px; border-radius: 12px; font-size: 0.92rem; font-weight: bold; background: #eef8ff; color: #1e5a8f; border: 1.5px solid #a4d3f9;"></div>
 
       <div style="margin-top: 12px;">
-        <div style="font-weight: 900; color: #274d73; font-size: 0.92rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 900; color: #274d73; font-size: 0.92rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
           <span>📂 米蘭題庫雲端考卷列表（可點選單一學校考卷即時爬題或查看原卷）：</span>
           <a id="melFolderLink" href="https://melances.com/grade4/" target="_blank" style="color: #2563eb; font-size: 0.85rem; text-decoration: underline;">開啟此版本雲端資料夾 ↗</a>
         </div>
@@ -1573,11 +1960,11 @@
     </div>
   </div>
 
-  <script src="question_bank.js?v=20261031_6"></script>
-  <script src="question_bank_extra.js?v=20261031_6"></script>
-  <script src="question_bank_v2.js?v=20261031_6"></script>
-  <script src="question_bank_melances.js?v=20261031_6"></script>
-  <script src="app.js?v=20261031_6"></script>
-  <script src="scope.js?v=20261031_6"></script>
+  <script src="question_bank.js?v=20261031_7"></script>
+  <script src="question_bank_extra.js?v=20261031_7"></script>
+  <script src="question_bank_v2.js?v=20261031_7"></script>
+  <script src="question_bank_melances.js?v=20261031_7"></script>
+  <script src="app.js?v=20261031_7"></script>
+  <script src="scope.js?v=20261031_7"></script>
 </body>
 </html>

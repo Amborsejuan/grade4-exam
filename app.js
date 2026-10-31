@@ -606,19 +606,19 @@ function renderExam() {
   }
 
   sectionCard.innerHTML = `
-    <div class="section-header" style="display:flex; align-items:center; gap:12px; margin-bottom:18px; border-bottom:2px dashed #e1effc; padding-bottom:12px;">
-      <div style="width:42px; height:42px; background:#eef6fe; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.4rem; border:2px solid #bfe0fb;">
+    <div class="section-header" style="display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; border-bottom:2px dashed #e1effc; padding-bottom:12px;">
+      <div class="section-header-icon" style="width:42px; height:42px; background:#eef6fe; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.4rem; border:2px solid #bfe0fb; flex-shrink:0;">
         ${cfg.icon}
       </div>
-      <div>
-        <div style="font-size:1.35rem; color:#2b6ca4; font-weight:900;">
+      <div class="section-header-info" style="flex:1; min-width:180px;">
+        <div class="section-header-title" style="font-size:1.35rem; color:#2b6ca4; font-weight:900;">
           ${headerTitle}
         </div>
-        <div style="font-size:0.95rem; color:#67829d; margin-top:3px;">
+        <div class="section-header-sub" style="font-size:0.95rem; color:#67829d; margin-top:3px;">
           共 ${currentExamQuestions.length} 題，滿分 100 分（每次刷新題目與選項順序都不同！）
         </div>
       </div>
-      <div style="margin-left:auto; background:#fff3d6; color:#a86b00; padding:4px 14px; border-radius:14px; font-size:0.92rem; font-weight:800; border:1px solid #ffe39b;">
+      <div class="section-header-score" style="margin-left:auto; background:#fff3d6; color:#a86b00; padding:4px 14px; border-radius:14px; font-size:0.92rem; font-weight:800; border:1px solid #ffe39b; white-space:nowrap;">
         每題 ${Math.round(100 / (currentExamQuestions.length || 1))} 分
       </div>
     </div>

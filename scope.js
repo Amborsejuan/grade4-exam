@@ -138,7 +138,8 @@
       '.scope-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}',
       '.scope-actions button{border-radius:999px;border:2px solid #7ec4ff;background:#fff;color:#2a6fa8;padding:8px 16px;font-size:.98rem;font-weight:700;cursor:pointer;}',
       '.scope-actions button.primary{background:#4aa8f0;color:#fff;border-color:#4aa8f0;}',
-      '#scopeMsg{color:#c0392b;font-size:.9rem;min-height:1.2em;margin-top:8px;}'
+      '#scopeMsg{color:#c0392b;font-size:.9rem;min-height:1.2em;margin-top:8px;}',
+      '@media(max-width:768px){#scopeBar{margin:6px 0 10px 0;gap:6px;justify-content:space-between;}#scopeBtn{padding:6px 12px;font-size:.86rem;}#scopeStatus{font-size:.82rem;}#scopeBox{padding:16px 14px;border-radius:16px;}.scope-row{font-size:.92rem;padding:7px 4px;}.scope-actions button{flex:1;padding:8px 10px;font-size:.88rem;}}'
     ].join('');
     document.head.appendChild(s);
   }
