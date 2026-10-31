@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>大耳狗的雲朵全科學堂 ☁️ 四年級上學期全科智慧測驗所 (115學年度)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg-sky-top: #eaf5fe;
+      --bg-sky-bottom: #fdf5fb;
+      --cinnamon-blue: #7bb5e8;
+      --cinnamon-dark-blue: #367ab8;
+      --cinnamon-light-blue: #d7ebfc;
+      --cinnamon-pastel-pink: #fbc6d9;
+      --cinnamon-soft-pink: #ffeef4;
+      --cinnamon-cloud: #ffffff;
+      --cinnamon-yellow: #ffdf79;
+      --text-main: #27415c;
+      --text-muted: #64819d;
+      --text-highlight: #ff5087;
+      --card-shadow: 0 10px 25px rgba(123, 181, 232, 0.2);
+      --card-radius: 24px;
+      --btn-radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Zen Maru Gothic', 'Mochiy Pop One', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, var(--bg-sky-top) 0%, #f7faff 35%, var(--bg-sky-bottom) 100%);
+      min-height: 100vh;
+      color: var(--text-main);
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 90px;
+      touch-action: manipulation;
+    }
+
+    .sky-cloud {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+      animation: floatCloud 32s infinite linear;
+    }
+    @keyframes floatCloud {
+      0% { transform: translateX(-180px); }
+      100% { transform: translateX(calc(100vw + 180px)); }
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 18px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Header */
+    .cinnamo-header {
+      text-align: center;
+      padding: 24px 20px 20px 20px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      border: 3px solid var(--cinnamon-light-blue);
+      margin-bottom: 22px;
+      position: relative;
+    }
+    .header-decor-top {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .cinnamo-mascot {
+      width: 140px;
+      height: 98px;
+      animation: floatMascot 4s ease-in-out infinite alternate;
+      filter: drop-shadow(0 8px 12px rgba(123, 181, 232, 0.35));
+    }
+    @keyframes floatMascot {
+      0% { transform: translateY(0px) rotate(-1.5deg); }
+      100% { transform: translateY(-8px) rotate(1.5deg); }
+    }
+
+    .badge-tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #ffd3e2, #ffb6cf);
+      color: #9c274f;
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 0.92rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 10px rgba(255, 182, 207, 0.4);
+    }
+    h1.main-title {
+      font-size: 1.85rem;
+      color: #245b88;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.02rem;
+      font-weight: 700;
+    }
+
+    /* Top Tools Hub */
+    .top-tools-hub {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    .tool-pill-btn {
+      background: #f0f7fe;
+      border: 2px solid #bfe0fc;
+      border-radius: 16px;
+      padding: 7px 15px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #276296;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+    }
+    .tool-pill-btn:hover {
+      background: #e1effe;
+      border-color: #8cc4f7;
+      transform: translateY(-2px);
+    }
+    .ai-magic-pill {
+      background: linear-gradient(135deg, #ffe082, #ff9bbd) !important;
+      color: #5c2400 !important;
+      font-weight: 900 !important;
+      border-color: #ffd166 !important;
+      box-shadow: 0 4px 15px rgba(255, 155, 189, 0.45) !important;
+      animation: aiPulse 2.5s infinite ease-in-out;
+    }
+    @keyframes aiPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255, 155, 189, 0.65); }
+    }
+    .import-exam-pill {
+      background: linear-gradient(135deg, #b7e8fd, #74c7fd) !important;
+      color: #0b4570 !important;
+      font-weight: 900 !important;
+      border-color: #92d6fb !important;
+    }
+    .omniroute-pill {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
+      color: #0d47a1 !important;
+      font-weight: 900 !important;
+      border-color: #90caf9 !important;
+    }
+
+    /* Subject Tabs Navigation */
+    .subject-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .subject-tab-btn {
+      background: #ffffff;
+      border: 2.5px solid #d0e7fc;
+      border-radius: 18px;
+      padding: 12px 6px;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #386794;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.22s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .subject-tab-btn:hover {
+      border-color: #9eccf8;
+      background: #f7fbff;
+      transform: translateY(-2px);
+    }
+    
+    /* Stage Tabs Navigation (Midterm vs Final) */
+    .stage-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stage-tab-btn {
+      background: #ffffff;
+      border: 2.5px solid #d4e8fc;
+      border-radius: 18px;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 12px rgba(80, 153, 237, 0.06);
+    }
+    .stage-tab-btn:hover {
+      border-color: #8cc4f7;
+      background: #f6fbff;
+      transform: translateY(-2px);
+    }
+    .stage-tab-btn.active {
+      background: linear-gradient(135deg, #e3f2fd, #ffffff);
+      border-color: #4a9be8;
+      box-shadow: 0 6px 18px rgba(74, 155, 232, 0.28);
+      border-width: 3px;
+    }
+    .stage-tab-btn.active .stage-title {
+      color: #1e6bb8;
+      font-weight: 900;
+    }
+    .stage-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    .stage-text-wrap {
+      flex: 1;
+    }
+    .stage-title {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #2c5982;
+      margin-bottom: 3px;
+    }
+    .stage-desc {
+      font-size: 0.78rem;
+      color: #6c8ea8;
+      line-height: 1.25;
+    }
+    @media (max-width: 768px) {
+      .stage-nav-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .stage-tab-btn {
+        padding: 8px 12px;
+      }
+      .stage-icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .subject-tab-btn.active {
+      background: linear-gradient(135deg, #74b7f5, #5099ed);
+      color: #fff;
+      border-color: #3982d6;
+      box-shadow: 0 6px 18px rgba(80, 153, 237, 0.42);
+      transform: translateY(-2px);
+    }
+
+    /* Control Bar */
+    .exam-control-bar {
+      background: #f0f7fe;
+      border: 2px dashed #b8daf8;
+      border-radius: 20px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .control-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2b6191;
+    }
+    .version-select {
+      font-family: inherit;
+      border: 2px solid #b7dbfc;
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 0.98rem;
+      font-weight: bold;
+      color: #274766;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+    }
+    .randomize-btn {
+      font-family: inherit;
+      background: linear-gradient(135deg, #ff9bbd, #ff5b8f);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 9px 18px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 91, 143, 0.35);
+      transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .randomize-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 18px rgba(255, 91, 143, 0.45);
+    }
+
+    /* Sticky Stats Bar */
+    .sticky-stats {
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border: 2px solid #bfe0fc;
+      border-radius: 20px;
+      padding: 10px 18px;
+      box-shadow: 0 6px 20px rgba(100, 160, 220, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .progress-wrap {
+      flex: 1;
+      margin: 0 16px;
+    }
+    .progress-bar-bg {
+      height: 15px;
+      background: #eaf3fb;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #d2e7fa;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6bc1ff, #3fa9f5);
+      border-radius: 10px;
+      transition: width 0.35s ease;
+    }
+    .stats-text {
+      font-weight: 900;
+      color: #2f6999;
+      font-size: 1.05rem;
+      white-space: nowrap;
+    }
+    .timer-badge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: #eef7ff;
+      border: 2px solid #badbfb;
+      border-radius: 14px;
+      padding: 4px 12px;
+      font-weight: 900;
+      font-size: 1.05rem;
+      color: #1f67a8;
+      margin-right: 12px;
+    }
+
+    /* Voice Panel */
+    .voice-settings-card {
+      background: #ffffff;
+      border: 3px solid #bde1fc;
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(90, 160, 220, 0.22);
+      margin-bottom: 20px;
+    }
+    .voice-styles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .voice-style-btn {
+      background: #f7fbff;
+      border: 2px solid #cbe4fb;
+      border-radius: 16px;
+      padding: 10px 8px;
+      font-family: inherit;
+      color: #315e86;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .voice-style-btn.active {
+      background: #e3f2fd;
+      border-color: #2196f3;
+      color: #0d47a1;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.28);
+    }
+
+    /* Questions Container */
+    .test-section {
+      background: #ffffff;
+      border-radius: var(--card-radius);
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      border: 3px solid #d9ecfc;
+      margin-bottom: 25px;
+    }
+    .question-block {
+      background: #f9fcff;
+      border: 2px solid #d7eafd;
+      border-radius: 20px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      transition: all 0.25s ease;
+    }
+    .question-block.answered {
+      border-color: #badbf9;
+      background: #ffffff;
+    }
+    .question-block.speaking-pulse {
+      border-color: #55a8fb !important;
+      box-shadow: 0 0 25px rgba(85, 168, 251, 0.65) !important;
+      transform: scale(1.012);
+    }
+    .q-top-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .q-number {
+      background: linear-gradient(135deg, #7ec2f9, #499eeb);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(73, 158, 235, 0.35);
+    }
+    .q-content {
+      flex: 1;
+      font-size: 1.25rem;
+      line-height: 1.65;
+      font-weight: 700;
+      color: #1e4265;
+    }
+    .tts-btn {
+      background: #eef6fd;
+      border: 2px solid #bfe0fc;
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: #2769a6;
+      transition: all 0.2s;
+    }
+    .tts-btn:hover {
+      background: #cae4fc;
+      transform: scale(1.08);
+    }
+
+    /* Options */
+    .tf-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .tf-btn {
+      background: #ffffff;
+      border: 3px solid #cfe5fc;
+      border-radius: 18px;
+      padding: 16px 20px;
+      font-family: inherit;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #29557d;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+    .tf-btn:hover {
+      border-color: #8bc2f8;
+      background: #f3f9ff;
+    }
+    .tf-btn.selected-true {
+      background: #e8f7ee;
+      border-color: #3bb273;
+      color: #1f6b43;
+      box-shadow: 0 6px 16px rgba(59, 178, 115, 0.28);
+    }
+    .tf-btn.selected-false {
+      background: #ffeef2;
+      border-color: #f25774;
+      color: #9c1f35;
+      box-shadow: 0 6px 16px rgba(242, 87, 116, 0.28);
+    }
+
+    .mc-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mc-option-card {
+      background: #ffffff;
+      border: 2.5px solid #d4e7fa;
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mc-option-card:hover {
+      border-color: #89c1f8;
+      background: #f6fbff;
+    }
+    .mc-option-card.selected {
+      background: #e7f3fe;
+      border-color: #3b93e8;
+      box-shadow: 0 4px 14px rgba(59, 147, 232, 0.25);
+    }
+    .mc-radio-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2.5px solid #99c7f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: #2b679c;
+      flex-shrink: 0;
+      background: #fff;
+    }
+    .mc-option-card.selected .mc-radio-circle {
+      background: #3b93e8;
+      color: #fff;
+      border-color: #2c77c4;
+    }
+    .mc-option-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #21415f;
+    }
+
+    .explanation-box {
+      margin-top: 14px;
+      background: #fff8e8;
+      border: 2px dashed #fbd47b;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 1.05rem;
+      color: #835200;
+      line-height: 1.6;
+      display: none;
+    }
+    .explanation-box.show {
+      display: block;
+    }
+
+    .status-badge {
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-left: auto;
+    }
+    .status-badge.correct {
+      background: #e8f7ee;
+      color: #227b4b;
+      border: 1px solid #7cd6a4;
+    }
+    .status-badge.wrong {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    /* Bottom Actions */
+    .bottom-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    .submit-exam-btn {
+      font-family: inherit;
+      background: linear-gradient(135deg, #4da4f7, #1976d2);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--btn-radius);
+      padding: 16px 42px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(25, 118, 210, 0.42);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .submit-exam-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(25, 118, 210, 0.52);
+    }
+    .reset-btn {
+      font-family: inherit;
+      background: #ffffff;
+      border: 2.5px solid #bddbfc;
+      color: #37648f;
+      border-radius: var(--btn-radius);
+      padding: 16px 28px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s;
+    }
+    .reset-btn:hover {
+      background: #f0f7fe;
+      border-color: #8bc2f8;
+    }
+
+    /* Scratchpad Floating & Overlay */
+    .floating-scratchpad-btn {
+      position: fixed;
+      bottom: 84px;
+      right: 22px;
+      background: #fff8e8;
+      border: 3px solid #ffdf79;
+      border-radius: 50px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(220, 160, 40, 0.28);
+      z-index: 99;
+      cursor: pointer;
+      font-weight: 900;
+      color: #8c5300;
+      font-size: 0.98rem;
+      transition: all 0.2s;
+    }
+    .floating-scratchpad-btn:hover {
+      transform: scale(1.06);
+    }
+    .scratchpad-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 50, 75, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1001;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .scratchpad-container {
+      background: #fffdf7;
+      border: 6px solid #ffdf79;
+      border-radius: 30px;
+      width: 95vw;
+      max-width: 900px;
+      height: 84vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    .scratchpad-toolbar {
+      background: #fff6db;
+      border-bottom: 2px dashed #fbd47b;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .canvas-paint-area {
+      flex: 1;
+      touch-action: none;
+      cursor: crosshair;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Badges */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .badge-card {
+      background: #f7fbff;
+      border: 2px dashed #bfe0fc;
+      border-radius: 20px;
+      padding: 16px 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0.55;
+      transition: all 0.3s;
+    }
+    .badge-card.unlocked {
+      background: linear-gradient(135deg, #ffffff, #eef7ff);
+      border: 2.5px solid #ffd15c;
+      box-shadow: 0 6px 18px rgba(255, 209, 92, 0.35);
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+    .badge-icon {
+      font-size: 2.4rem;
+      margin-bottom: 4px;
+    }
+    .badge-title {
+      font-size: 0.98rem;
+      font-weight: 900;
+      color: #32587e;
+    }
+    .badge-desc {
+      font-size: 0.78rem;
+      color: #7995b0;
+      margin-top: 2px;
+    }
+
+    /* Modal dialogs */
+    .common-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 57, 82, 0.68);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .modal-card-box {
+      background: #fff;
+      border: 6px solid #cae4fe;
+      border-radius: 36px;
+      max-width: 680px;
+      width: 100%;
+      padding: 30px 24px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.28);
+      position: relative;
+    }
+
+    /* Result Modal */
+    .certificate-ribbon {
+      display: inline-block;
+      background: linear-gradient(135deg, #ffd768, #ffb834);
+      color: #7a4600;
+      font-weight: 900;
+      font-size: 1.15rem;
+      padding: 6px 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(255, 184, 52, 0.4);
+      margin-bottom: 12px;
+    }
+    .score-circle {
+      width: 135px;
+      height: 135px;
+      border-radius: 50%;
+      margin: 16px auto;
+      background: linear-gradient(135deg, #e0f2fe, #b9e5fd);
+      border: 5px solid #6ecdfa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(110, 205, 250, 0.42);
+    }
+    .score-num {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #0369a1;
+      line-height: 1;
+    }
+    .score-label {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #0284c7;
+    }
+
+    /* Floating Companion */
+    .floating-cinnamo-btn {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #ffffff;
+      border: 3px solid #bfe0fc;
+      border-radius: 50px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(70, 130, 200, 0.25);
+      z-index: 99;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .companion-avatar { width: 48px; height: 35px; }
+    .companion-text { font-size: 0.98rem; font-weight: 800; color: #356fa3; }
+
+    /* Dropzone for File Import */
+    .import-dropzone {
+      border: 3px dashed #8ecdfa;
+      background: #f7fbff;
+      border-radius: 20px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.22s;
+      margin-top: 10px;
+    }
+    .import-dropzone:hover, .import-dropzone.dragover {
+      background: #eef7ff;
+      border-color: #3b93e8;
+      transform: scale(1.01);
+    }
+    .tab-pills-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .import-subtab-btn {
+      background: #eef6fd;
+      border: 1.5px solid #cbe4fb;
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #276192;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .import-subtab-btn.active {
+      background: #398de3;
+      color: #fff;
+      border-color: #2674c4;
+    }
+
+    /* Print styles */
+    .print-only-header { display: none; }
+    .print-only-key { display: none; }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 14pt;
+        padding: 0;
+      }
+      .sky-cloud, .cinnamo-mascot, .badge-tag, .top-tools-hub, .subject-nav-grid, 
+      .exam-control-bar, .sticky-stats, .bottom-actions, .floating-cinnamo-btn, 
+      .floating-scratchpad-btn, .tts-btn, .explanation-box, .voice-settings-card,
+      .common-modal-overlay, .scratchpad-overlay {
+        display: none !important;
+      }
+      .cinnamo-header {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 0 10px 0 !important;
+        margin-bottom: 10px !important;
+      }
+      .print-only-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+      }
+      .print-student-info {
+        display: flex;
+        justify-content: space-around;
+        font-weight: bold;
+        margin-top: 8px;
+        font-size: 12pt;
+      }
+      .test-section {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      .question-block {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        margin-bottom: 16px !important;
+        page-break-inside: avoid;
+      }
+      .tf-options-grid, .mc-options-list {
+        display: block !important;
+        margin-top: 8px !important;
+      }
+      .tf-btn, .mc-option-card {
+        border: 1px solid #ccc !important;
+        padding: 6px 10px !important;
+        margin-bottom: 4px !important;
+        box-shadow: none !important;
+        font-size: 12pt !important;
+      }
+      .print-only-key {
+        display: block !important;
+        page-break-before: always;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 2px dashed #666;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 12px 14px; }
+      h1.main-title { font-size: 1.45rem; }
+      .q-content { font-size: 1.1rem; }
+      .tf-btn { font-size: 1.18rem; padding: 12px 14px; }
+      .mc-option-card { padding: 12px 14px; }
+      .mc-option-text { font-size: 1.05rem; }
+      .subject-nav-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Clouds -->
+  <svg class="sky-cloud" style="top: 6%; width: 150px;" viewBox="0 0 100 60"><path fill="#ffffff" d="M20,45 A15,15 0 0,1 35,25 A22,22 0 0,1 68,22 A18,18 0 0,1 85,38 A12,12 0 0,1 78,50 L20,50 Z"/></svg>
+  <svg class="sky-cloud" style="top: 36%; animation-duration: 34s; animation-delay: -12s; width: 190px;" viewBox="0 0 100 60"><path fill="#ffffff" d="M20,45 A15,15 0 0,1 35,25 A22,22 0 0,1 68,22 A18,18 0 0,1 85,38 A12,12 0 0,1 78,50 L20,50 Z"/></svg>
+  <svg class="sky-cloud" style="top: 68%; animation-duration: 28s; animation-delay: -6s; width: 160px;" viewBox="0 0 100 60"><path fill="#ffffff" d="M20,45 A15,15 0 0,1 35,25 A22,22 0 0,1 68,22 A18,18 0 0,1 85,38 A12,12 0 0,1 78,50 L20,50 Z"/></svg>
+
+  <div class="container">
+
+    <!-- Print Header Only Seen on Paper -->
+    <div class="print-only-header">
+      <h2 style="font-size: 18pt; margin-bottom: 4px;">國小 115 學年度第 1 學期 期中評量試卷</h2>
+      <h3 style="font-size: 15pt;" id="printSubjectTitle">科目：國語文（康軒版）</h3>
+      <div class="print-student-info">
+        <span>四年甲班</span>
+        <span>座號：_______</span>
+        <span>姓名：<span id="printStudentNameSlot">綸綸</span></span>
+        <span>得分：_______</span>
+      </div>
+    </div>
+    
+    <!-- Online Web Header -->
+    <header class="cinnamo-header">
+      <div class="header-decor-top">
+        <svg class="cinnamo-mascot" viewBox="0 0 200 140">
+          <ellipse cx="100" cy="115" rx="75" ry="18" fill="#e2f1fc"/>
+          <ellipse cx="60" cy="112" rx="30" ry="14" fill="#edf6fd"/>
+          <ellipse cx="140" cy="112" rx="30" ry="14" fill="#edf6fd"/>
+          <path d="M60,65 C25,58 5,82 12,98 C18,110 45,102 62,78 Z" fill="#ffffff" stroke="#c8e2fb" stroke-width="2.5" />
+          <path d="M140,65 C175,58 195,82 188,98 C182,110 155,102 138,78 Z" fill="#ffffff" stroke="#c8e2fb" stroke-width="2.5" />
+          <ellipse cx="100" cy="85" rx="34" ry="26" fill="#ffffff" stroke="#c8e2fb" stroke-width="2.5"/>
+          <ellipse cx="86" cy="105" rx="9" ry="6" fill="#ffffff" stroke="#c8e2fb" stroke-width="2"/>
+          <ellipse cx="114" cy="105" rx="9" ry="6" fill="#ffffff" stroke="#c8e2fb" stroke-width="2"/>
+          <ellipse cx="100" cy="58" rx="44" ry="34" fill="#ffffff" stroke="#c8e2fb" stroke-width="2.5"/>
+          <ellipse cx="83" cy="56" rx="5" ry="7" fill="#4d9bd6"/>
+          <circle cx="81.5" cy="53.5" r="2" fill="#ffffff"/>
+          <ellipse cx="117" cy="56" rx="5" ry="7" fill="#4d9bd6"/>
+          <circle cx="115.5" cy="53.5" r="2" fill="#ffffff"/>
+          <ellipse cx="73" cy="65" rx="7" ry="4.5" fill="#ffb4cf" opacity="0.8"/>
+          <ellipse cx="127" cy="65" rx="7" ry="4.5" fill="#ffb4cf" opacity="0.8"/>
+          <path d="M96,62 Q100,66 104,62" fill="none" stroke="#7aa7cb" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M130,90 Q145,86 142,97 Q139,103 133,96" fill="#ffffff" stroke="#c8e2fb" stroke-width="2.2"/>
+          <polygon points="100,20 103,28 111,28 105,33 107,41 100,36 93,41 95,33 89,28 97,28" fill="#ffd15c"/>
+        </svg>
+      </div>
+
+      <div class="badge-tag">🐶 大耳狗全科學堂・115學年度 四年級上學期專用 ☁️</div>
+      <h1 class="main-title">國小四年級（上學期） 全科隨機抽題智慧測驗系統</h1>
+      <p class="subtitle" id="subjectHeaderSubtitle">🎯 國語(康)・英語(康WW3)・數學(翰)・社會(康)・自然(康)・100% 嚴格對應四年級上學期課綱！</p>
+
+      <!-- Top Tools Hub: AI Generator, PDF Import, OmniRoute, Badges, Mistakes, Scratchpad, Print -->
+      <div class="top-tools-hub">
+        <button class="tool-pill-btn ai-magic-pill" onclick="openAiGeneratorModal()">
+          <span>🪄</span> AI 即時出題所
+        </button>
+        <button class="tool-pill-btn import-exam-pill" onclick="openImportModal()">
+          <span>📸</span> 匯入學校考卷 (PDF/拍照)
+        </button>
+        <button class="tool-pill-btn" style="background: linear-gradient(135deg, #d8f3dc, #95d5b2); color: #1b4332; border-color: #74c69d; font-weight: 900;" onclick="openMelancesModal()">
+          <span>🕷️</span> 依出版社爬題 (米蘭題庫)
+        </button>
+        <button class="tool-pill-btn omniroute-pill" onclick="openOmniRouteModal()">
+          <span>🌐</span> OmniRoute 接口
+        </button>
+        <button class="tool-pill-btn" onclick="openBadgesModal()">
+          <span>🏆</span> 勳章館 (<span id="unlockedBadgesCount">0</span>/7)
+        </button>
+        <button class="tool-pill-btn" onclick="openMistakesModal()">
+          <span>📖</span> 錯題本 (<span id="totalMistakesCount">0</span>)
+        </button>
+        <button class="tool-pill-btn" onclick="toggleScratchpad()">
+          <span>✏️</span> 草稿紙
+        </button>
+        <button class="tool-pill-btn" onclick="window.print()">
+          <span>🖨️</span> 列印卷
+        </button>
+      </div>
+    </header>
+
+    <!-- Five Subjects Tabs Navigation -->
+    <div class="subject-nav-grid">
+      <button class="subject-tab-btn active" id="stab_chinese" onclick="switchSubject('chinese')">
+        <span>📕</span> 國語文
+      </button>
+      <button class="subject-tab-btn" id="stab_english" onclick="switchSubject('english')">
+        <span>📘</span> 英語文
+      </button>
+      <button class="subject-tab-btn" id="stab_math" onclick="switchSubject('math')">
+        <span>📗</span> 數學科
+      </button>
+      <button class="subject-tab-btn" id="stab_social" onclick="switchSubject('social')">
+        <span>📙</span> 社會科
+      </button>
+      <button class="subject-tab-btn" id="stab_nature" onclick="switchSubject('nature')">
+        <span>🔬</span> 自然科學
+      </button>
+    </div>
+
+        <!-- Exam Stage Tabs: Midterm, Final, All -->
+    <div class="stage-nav-grid">
+      <button class="stage-tab-btn active" id="spill_midterm" onclick="setExamStage('midterm')">
+        <span class="stage-icon">🎯</span>
+        <div class="stage-text-wrap">
+          <div class="stage-title">期中考階段（第 1 次段考）</div>
+          <div class="stage-desc">國語 1~6 課・數學 1~5 單元・社會/自然前兩單元</div>
+        </div>
+      </button>
+      <button class="stage-tab-btn" id="spill_final" onclick="setExamStage('final')">
+        <span class="stage-icon">🏁</span>
+        <div class="stage-text-wrap">
+          <div class="stage-title">期末考階段（第 2 次段考）</div>
+          <div class="stage-desc">國語 7~12 課・數學 6~10 單元・社會/自然後兩單元</div>
+        </div>
+      </button>
+      <button class="stage-tab-btn" id="spill_all" onclick="setExamStage('all')">
+        <span class="stage-icon">🌟</span>
+        <div class="stage-text-wrap">
+          <div class="stage-title">全冊總複習（整學期大會考）</div>
+          <div class="stage-desc">全學期完整課綱・五科綜合大滿貫</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Exam Control Bar -->
+    <div class="exam-control-bar">
+      <div class="control-item">
+        <span>👶 姓名：</span>
+        <input type="text" id="studentNameInput" class="version-select" value="綸綸" placeholder="輸入小朋友名字" style="width: 112px; text-align: center; font-weight: 900; color: #d61b52; background: #fff5f8; border-color: #ffb3c6;" oninput="onStudentNameChange(this.value, false)" onchange="onStudentNameChange(this.value, true)" title="可自行輸入小朋友的名字，證書、獎章與語音皆會自動套用！">
+      </div>
+            <div class="control-item">
+        <span>🎯 階段：</span>
+        <select class="version-select" id="stageSelector" onchange="setExamStage(this.value)">
+          <option value="midterm" selected>🎯 期中考階段 (前半學期)</option>
+          <option value="final">🏁 期末考階段 (後半學期)</option>
+          <option value="all">🌟 全冊總複習 (整學期綜合)</option>
+        </select>
+      </div>
+      <div class="control-item">
+        <span>📚 版本：</span>
+        <select class="version-select" id="versionSelector" onchange="onVersionChange(this.value)"></select>
+      </div>
+      <div class="control-item">
+        <span>📝 題數：</span>
+        <select class="version-select" id="qCountSelector" onchange="onCountChange(this.value)">
+          <option value="10" selected>10 題精華速測</option>
+          <option value="15">15 題標準段考</option>
+          <option value="20">20 題大滿貫挑戰</option>
+        </select>
+      </div>
+      <div class="control-item">
+        <span>⏱️ 模式：</span>
+        <select class="version-select" id="timerModeSelector" onchange="onTimerModeChange(this.value)">
+          <option value="0" selected>🌱 自由不限時</option>
+          <option value="10">⏰ 10分鐘速測</option>
+          <option value="15">⏰ 15分鐘模擬考</option>
+          <option value="20">⏰ 20分鐘段考標準</option>
+        </select>
+      </div>
+      <button class="randomize-btn" onclick="generateRandomExam(true)">
+        <span>🎲</span> 隨機換一套新試卷！
+      </button>
+    </div>
+
+    <!-- Sticky Progress and Voice Bar -->
+    <div class="sticky-stats">
+      <div class="stats-text" id="progressText">作答進度：0 / 0 題</div>
+      <div class="progress-wrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+      </div>
+      <div class="timer-badge" id="examTimerDisplay">
+        <span>⏳</span> <span id="timerCountdown">15:00</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <button class="reset-btn" id="voiceMasterSwitchBtn" style="padding: 6px 14px; font-size: 0.92rem; font-weight: 900; background: #dcfce7; color: #166534; border: 2px solid #86efac; display: flex; align-items: center; gap: 5px;" onclick="toggleQuestionVoice()" title="一鍵開啟或關閉題目語音朗讀">
+          <span id="voiceMasterIcon">🔊</span> <span id="voiceMasterText">題目語音：開啟</span>
+        </button>
+        <button class="reset-btn" id="voiceToggleBtn" style="padding: 6px 14px; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;" onclick="toggleVoicePanel()">
+          🎙️ <span id="currentVoiceLabel">大耳狗萌萌音</span> ▾
+        </button>
+        <button class="reset-btn" id="voiceTestBtn" style="padding: 6px 12px; font-size: 0.92rem; background: #eaf4fd;" onclick="testCurrentVoice()" title="試聽目前配音">
+          🎧 試聽
+        </button>
+      </div>
+      <style>
+        body.voice-disabled .tts-btn {
+          display: none !important;
+        }
+      </style>
+    </div>
+
+    <!-- Voice Settings Dropdown Panel -->
+    <div class="voice-settings-card" id="voicePanel" style="display: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px dashed #ddecfa; padding-bottom: 8px;">
+        <div style="font-size: 1.15rem; font-weight: 900; color: #2e6ea5; display: flex; align-items: center; gap: 8px;">
+          <span>🎙️</span> 選擇朗讀配音風格（支援 AI 真人語音包）
+        </div>
+        <button style="background: none; border: none; font-size: 1.3rem; color: #8faec9; cursor: pointer; padding: 0 4px;" onclick="toggleVoicePanel()">✖</button>
+      </div>
+
+      <div style="background: #eef7ff; border: 1.5px solid #bde0fe; border-radius: 14px; padding: 10px 14px; margin-top: 10px; font-size: 0.95rem; color: #23588a; line-height: 1.5;">
+        ✨ <strong>AI 真人語音包已就緒！</strong>英語題目將自動採用<strong>美式真人純英語</strong>朗讀，中文題目採用道地真人國語：
+      </div>
+
+      <div class="voice-styles-grid">
+        <button class="voice-style-btn active" id="vbtn_cinnamo" onclick="applyVoicePreset('cinnamo')">
+          <span style="font-size: 1.4rem;">🐶</span>
+          <span style="font-weight:900;">大耳狗萌萌音</span>
+          <span style="font-size:0.75rem; color:#88a0b8;">超甜動漫童音</span>
+        </button>
+        <button class="voice-style-btn" id="vbtn_gentle" onclick="applyVoicePreset('gentle')">
+          <span style="font-size: 1.4rem;">🌸</span>
+          <span style="font-weight:900;">臺灣溫柔姐姐</span>
+          <span style="font-size:0.75rem; color:#88a0b8;">臺灣腔曉臻·超級甜</span>
+        </button>
+        <button class="voice-style-btn" id="vbtn_energetic" onclick="applyVoicePreset('energetic')">
+          <span style="font-size: 1.4rem;">👦</span>
+          <span style="font-weight:900;">臺灣陽光夥伴</span>
+          <span style="font-size:0.75rem; color:#88a0b8;">臺灣腔雲哲·陽光活潑</span>
+        </button>
+        <button class="voice-style-btn" id="vbtn_teacher" onclick="applyVoicePreset('teacher')">
+          <span style="font-size: 1.4rem;">👩‍🏫</span>
+          <span style="font-weight:900;">臺灣知性老師</span>
+          <span style="font-size:0.75rem; color:#88a0b8;">臺灣腔曉雨·標準親切</span>
+        </button>
+        <button class="voice-style-btn" id="vbtn_english_teacher" onclick="applyVoicePreset('english_teacher')">
+          <span style="font-size: 1.4rem;">🇺🇸</span>
+          <span style="font-weight:900;">美式英語老師</span>
+          <span style="font-size:0.75rem; color:#88a0b8;">標準真人美語</span>
+        </button>
+        <button class="voice-style-btn" id="vbtn_mute" onclick="applyVoicePreset('mute')">
+          <span style="font-size: 1.4rem;">🔇</span>
+          <span style="font-weight:900;">靜音模式</span>
+          <span style="font-size:0.75rem; color:#88a0b8;">關閉語音朗讀</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- EXAM CONTAINER -->
+    <div id="examQuestionsContainer"></div>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <button class="submit-exam-btn" onclick="submitExam()">
+        <span>✨</span> 完成交卷！看大耳狗成績單
+      </button>
+      <button class="reset-btn" onclick="generateRandomExam(false)">
+        🔄 清除重寫
+      </button>
+    </div>
+
+    <!-- Print Only Answer Key -->
+    <div class="print-only-key" id="printAnswerKeySection"></div>
+
+  </div>
+
+  <!-- Floating Scratchpad Button -->
+  <div class="floating-scratchpad-btn" onclick="toggleScratchpad()">
+    <span>✏️</span> <span>手寫草稿紙</span>
+  </div>
+
+  <!-- Floating Companion -->
+  <div class="floating-cinnamo-btn" onclick="cheerUp()">
+    <svg class="companion-avatar" viewBox="0 0 200 140">
+      <ellipse cx="100" cy="70" rx="44" ry="34" fill="#ffffff" stroke="#90c7f7" stroke-width="3"/>
+      <ellipse cx="83" cy="68" rx="5" ry="7" fill="#4d9bd6"/><circle cx="81.5" cy="65.5" r="2" fill="#fff"/>
+      <ellipse cx="117" cy="68" rx="5" ry="7" fill="#4d9bd6"/><circle cx="115.5" cy="65.5" r="2" fill="#fff"/>
+      <ellipse cx="73" cy="77" rx="7" ry="4.5" fill="#ffb4cf"/><ellipse cx="127" cy="77" rx="7" ry="4.5" fill="#ffb4cf"/>
+      <path d="M96,74 Q100,78 104,74" fill="none" stroke="#7aa7cb" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M60,75 C25,68 5,92 12,108 C18,120 45,112 62,88 Z" fill="#ffffff" stroke="#90c7f7" stroke-width="3"/>
+      <path d="M140,75 C175,68 195,92 188,108 C182,120 155,112 138,88 Z" fill="#ffffff" stroke="#90c7f7" stroke-width="3"/>
+    </svg>
+    <div class="companion-text" id="companionBubble"><span class="dyn-student-name">綸綸</span>加油！點我聽鼓勵！🐶</div>
+  </div>
+
+  <!-- ✏️ Scratchpad Canvas Drawer Modal -->
+  <div class="scratchpad-overlay" id="scratchpadModal">
+    <div class="scratchpad-container">
+      <div class="scratchpad-toolbar">
+        <div style="font-weight: 900; color: #8c5300; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+          <span>✏️</span> 大耳狗魔法草稿紙（隨手直式計算與塗鴉）
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button class="tool-pill-btn" id="toolPenBtn" style="background:#cae4fe;" onclick="setScratchTool('pen')">✏️ 鉛筆</button>
+          <button class="tool-pill-btn" id="toolEraserBtn" onclick="setScratchTool('eraser')">🧽 橡皮擦</button>
+          <button class="tool-pill-btn" style="color:#d11352;" onclick="clearScratchpad()">🗑️ 一鍵清空</button>
+          <button class="tool-pill-btn" style="background:#ffeef4; color:#b01750;" onclick="toggleScratchpad()">✖ 關閉草稿</button>
+        </div>
+      </div>
+      <canvas id="scratchCanvas" class="canvas-paint-area"></canvas>
+    </div>
+  </div>
+
+  <!-- 🏆 Badges Modal -->
+  <div class="common-modal-overlay" id="badgesModal">
+    <div class="modal-card-box">
+      <div class="certificate-ribbon">⭐ 大耳狗榮譽勳章館 ⭐</div>
+      <h2 style="color: #2769a6; font-size: 1.7rem; margin-bottom: 6px;"><span class="dyn-student-name">綸綸</span>的學習成就獎章</h2>
+      <p style="color: #6a8aa7; font-size: 0.95rem;">努力作答各科試卷，就能解鎖大耳狗限定榮譽徽章喔！</p>
+      <div class="badges-grid" id="badgesContainer"></div>
+      <button class="submit-exam-btn" style="margin: 16px auto 0 auto; padding: 10px 32px; font-size: 1.15rem;" onclick="closeBadgesModal()">
+        繼續加油！
+      </button>
+    </div>
+  </div>
+
+  <!-- 📖 Mistakes Modal -->
+  <div class="common-modal-overlay" id="mistakesModal">
+    <div class="modal-card-box" style="max-width: 720px; text-align: left;">
+      <div style="text-align: center;">
+        <div class="certificate-ribbon">📖 智能弱點錯題本</div>
+        <h2 style="color: #2769a6; font-size: 1.7rem; margin-bottom: 6px;"><span class="dyn-student-name">綸綸</span>的錯題消滅筆記</h2>
+        <p style="color: #6a8aa7; font-size: 0.95rem;">系統已為您自動收錄答錯的題目，搞懂觀念就能徹底消除！</p>
+      </div>
+      <div id="mistakesListContainer" style="max-height: 48vh; overflow-y: auto; margin: 18px 0; padding-right: 6px;"></div>
+      <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <button class="submit-exam-btn" style="padding: 10px 28px; font-size: 1.1rem;" onclick="startMistakePractice()">
+          🎯 立即啟動「錯題消滅特訓」
+        </button>
+        <button class="reset-btn" onclick="clearAllMistakes()">
+          🗑️ 清空錯題本
+        </button>
+        <button class="reset-btn" onclick="closeMistakesModal()">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🪄 AI Instant Question Generator Modal -->
+  <div class="common-modal-overlay" id="aiGeneratorModal">
+    <div class="modal-card-box" style="max-width: 650px; text-align: left;">
+      <div style="text-align: center;">
+        <div class="certificate-ribbon" style="background: linear-gradient(135deg, #ffd166, #ff9bbd); color: #522000;">
+          ✨ 大耳狗 AI 智慧出題小工坊 ☁️
+        </div>
+        <h2 style="color: #2769a6; font-size: 1.7rem; margin-bottom: 4px;">隨選單元，瞬間生成專屬新試卷</h2>
+        <p style="color: #6a8aa7; font-size: 0.95rem;">依照 115 學年度小學四年級課綱，一秒生出最新素養考題！</p>
+      </div>
+
+      <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+            📘 選擇考科：
+          </label>
+          <select id="aiSubjectSelect" class="version-select" style="width: 100%; padding: 8px 12px;" onchange="onAiSubjectChange(this.value)">
+            <option value="chinese">📕 國語文 (康軒版)</option>
+            <option value="english">📘 英語文 (康軒 Wonder World 3)</option>
+            <option value="math">📗 數學科 (翰林版)</option>
+            <option value="social" selected>📙 社會科 (康軒版)</option>
+            <option value="nature">🔬 自然科學 (康軒版)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+            🎯 測驗單元範圍：
+          </label>
+          <select id="aiUnitSelect" class="version-select" style="width: 100%; padding: 8px 12px;"></select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+              📝 出題題數：
+            </label>
+            <select id="aiCountSelect" class="version-select" style="width: 100%; padding: 8px 12px;">
+              <option value="5">5 題精華快測</option>
+              <option value="10" selected>10 題標準段考</option>
+              <option value="15">15 題深度挑戰</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+              ⭐ 試題難度：
+            </label>
+            <select id="aiDiffSelect" class="version-select" style="width: 100%; padding: 8px 12px;">
+              <option value="basic">🌱 基礎奠基（觀念扎實）</option>
+              <option value="standard" selected>⭐ 標準段考（仿真測驗）</option>
+              <option value="advanced">🔥 素養挑戰（靈活應用）</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="aiGeneratingStatus" style="display: none; text-align: center; padding: 14px 0; color: #ff5087; font-weight: 900; font-size: 1.1rem;">
+          🐶 ☁️ 大耳狗正在為 <span class="dyn-student-name">綸綸</span> 翻閱 115 學年度最新課本，思考新題目中...✨
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px; margin-top: 22px;">
+        <button class="submit-exam-btn" id="aiGenerateBtn" style="padding: 12px 32px; font-size: 1.15rem; background: linear-gradient(135deg, #ff9bbd, #ff5b8f);" onclick="triggerAiGeneration()">
+          🪄 立即生成專屬全新試卷！
+        </button>
+        <button class="reset-btn" onclick="closeAiGeneratorModal()">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📸 考卷 PDF / 拍照圖片 / 純文字匯入轉換 Modal -->
+  <div class="common-modal-overlay" id="importExamModal">
+    <div class="modal-card-box" style="max-width: 680px; text-align: left;">
+      <div style="text-align: center;">
+        <div class="certificate-ribbon" style="background: linear-gradient(135deg, #8fe1fd, #52b3fc); color: #063962;">
+          📸 學校考卷自動轉換魔法屋 ☁️
+        </div>
+        <h2 style="color: #2769a6; font-size: 1.7rem; margin-bottom: 4px;">上傳考卷 PDF、拍照或貼上文字</h2>
+        <p style="color: #6a8aa7; font-size: 0.95rem;">大耳狗自動讀取題目與選項，一秒轉化成可填寫的線上考卷！</p>
+      </div>
+
+      <!-- Import Mode Tabs -->
+      <div class="tab-pills-row">
+        <button class="import-subtab-btn active" id="itab_pdf" onclick="switchImportTab('pdf')">📄 上傳 PDF 考卷檔</button>
+        <button class="import-subtab-btn" id="itab_image" onclick="switchImportTab('image')">📸 考卷拍照上傳</button>
+        <button class="import-subtab-btn" id="itab_text" onclick="switchImportTab('text')">📝 貼上考卷純文字</button>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <div style="margin-bottom: 12px; display: flex; gap: 12px; align-items: center;">
+          <label style="font-weight: 900; color: #274d73; font-size: 0.95rem;">歸納考科：</label>
+          <select id="importSubjectSelect" class="version-select" style="flex: 1; padding: 6px 12px;">
+            <option value="social" selected>📙 社會科 (康軒版)</option>
+            <option value="chinese">📕 國語文 (康軒版)</option>
+            <option value="english">📘 英語文 (康軒 Wonder World 3)</option>
+            <option value="math">📗 數學科 (翰林版)</option>
+            <option value="nature">🔬 自然科學 (康軒版)</option>
+          </select>
+        </div>
+
+        <!-- 1. PDF / File Dropzone Panel -->
+        <div id="importFileSection">
+          <input type="file" id="examFileInput" style="display: none;" accept=".pdf,.png,.jpg,.jpeg,.webp" onchange="onExamFileSelected(this.files[0])">
+          <div class="import-dropzone" id="examDropzone" onclick="document.getElementById('examFileInput').click()">
+            <div style="font-size: 2.8rem; margin-bottom: 6px;">📂</div>
+            <div style="font-size: 1.15rem; font-weight: 900; color: #2669a4;" id="dropzoneLabel">點擊選取考卷 PDF 檔 或 照片（亦可直接拖曳進來）</div>
+            <div style="font-size: 0.85rem; color: #7697b7; margin-top: 4px;">支援格式：.pdf、.png、.jpg、.jpeg</div>
+          </div>
+          <div id="selectedFileInfo" style="display: none; background: #eef8ff; border: 1.5px solid #a4d3f9; border-radius: 12px; padding: 8px 14px; margin-top: 10px; font-size: 0.92rem; color: #1e5a8f; font-weight: bold;"></div>
+        </div>
+
+        <!-- 2. Text Paste Panel -->
+        <div id="importTextSection" style="display: none;">
+          <textarea id="importTextInput" placeholder="請將學校考卷的題目直接複製貼於此處（例如：1. ( ) 泰雅族人... 2. ( ) 下列何者...）" style="width: 100%; height: 160px; padding: 10px 12px; border: 2px solid #bde0fd; border-radius: 16px; font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none;"></textarea>
+        </div>
+
+        <!-- Parsing Status Spinner -->
+        <div id="importParsingStatus" style="display: none; text-align: center; padding: 14px 0; color: #0288d1; font-weight: 900; font-size: 1.1rem;">
+          🐶 🐾 大耳狗正在認真閱讀考卷、整理題目與選項中...✨
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px; margin-top: 22px;">
+        <button class="submit-exam-btn" id="startImportBtn" style="padding: 12px 32px; font-size: 1.15rem; background: linear-gradient(135deg, #42a5f5, #1e88e5);" onclick="executeExamImport()">
+          🚀 開始魔法解析，轉成線上試卷！
+        </button>
+        <button class="reset-btn" onclick="closeImportModal()">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🌐 OmniRoute API 網關接口配置 Modal -->
+  <div class="common-modal-overlay" id="omniRouteModal">
+    <div class="modal-card-box" style="max-width: 640px; text-align: left;">
+      <div style="text-align: center;">
+        <div class="certificate-ribbon" style="background: linear-gradient(135deg, #bbdefb, #90caf9); color: #0d47a1;">
+          🌐 OmniRoute 路由網關接口 ☁️
+        </div>
+        <h2 style="color: #2769a6; font-size: 1.7rem; margin-bottom: 4px;">OmniRoute 路由網關配置</h2>
+        <p style="color: #6a8aa7; font-size: 0.95rem;">連接您的 OmniRoute 或 OpenAI 相容網關，自訂大模型出題與考卷辨識！</p>
+      </div>
+
+      <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+            🔗 OmniRoute 網關 Base URL：
+          </label>
+          <input type="text" id="cfgOmniBaseUrl" placeholder="例如：http://127.0.0.1:8000/v1 或 https://omniroute.your-domain.com/v1" style="width: 100%; padding: 8px 12px; border: 2px solid #bde0fd; border-radius: 12px; font-size: 0.95rem; font-family: monospace; outline: none;">
+          <div style="font-size: 0.78rem; color: #7697b7; margin-top: 3px;">預設為本地端 http://127.0.0.1:8000/v1</div>
+        </div>
+
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+            🔑 API Key / Token（金鑰）：
+          </label>
+          <input type="password" id="cfgOmniApiKey" placeholder="請輸入 OmniRoute 路由 Token（Bearer token）" style="width: 100%; padding: 8px 12px; border: 2px solid #bde0fd; border-radius: 12px; font-size: 0.95rem; outline: none;">
+        </div>
+
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.95rem; display: block; margin-bottom: 4px;">
+            🤖 模型名稱 (Model Name)：
+          </label>
+          <input type="text" id="cfgOmniModel" placeholder="例如：gemini-2.0-flash, gpt-4o, claude-3-5-sonnet, deepseek-chat" style="width: 100%; padding: 8px 12px; border: 2px solid #bde0fd; border-radius: 12px; font-size: 0.95rem; font-family: monospace; outline: none;">
+        </div>
+
+        <!-- Connection Test Status Box -->
+        <div id="omniTestStatusBox" style="display: none; padding: 10px 14px; border-radius: 12px; font-size: 0.92rem; font-weight: bold;"></div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px; margin-top: 22px; flex-wrap: wrap;">
+        <button class="reset-btn" style="background: #eef7ff; color: #1565c0; font-weight: 900;" onclick="testOmniRouteConnection()">
+          🎧 測試連線 OmniRoute
+        </button>
+        <button class="submit-exam-btn" style="padding: 10px 28px; font-size: 1.1rem;" onclick="saveOmniRouteSettings()">
+          💾 儲存接口設定
+        </button>
+        <button class="reset-btn" onclick="closeOmniRouteModal()">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🕷️ 米蘭老師題庫網 (melances.com/grade4/) 依出版社版本自動爬題 Modal -->
+  <div class="common-modal-overlay" id="melancesModal">
+    <div class="modal-card-box" style="max-width: 740px; text-align: left;">
+      <div style="text-align: center;">
+        <div class="certificate-ribbon" style="background: linear-gradient(135deg, #b7e4c7, #52b788); color: #081c15;">
+          🕷️ 米蘭老師四年級題庫 (melances.com) 依出版社自動爬題 ☁️
+        </div>
+        <h2 style="color: #2769a6; font-size: 1.65rem; margin-bottom: 4px;">依出版社版本（康軒／翰林／南一／何嘉仁）爬題選卷</h2>
+        <p style="color: #6a8aa7; font-size: 0.92rem;">系統已內建預爬各出版社共 <strong>196+ 道歷屆真題</strong>，您亦可隨時連線米蘭老師 Google 雲端題庫即時爬取指定出版社的新考卷！</p>
+      </div>
+
+      <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.9rem; display: block; margin-bottom: 4px;">📘 選擇科目：</label>
+          <select id="melSubjectSelect" class="version-select" style="width: 100%; padding: 8px 10px;" onchange="onMelancesFilterChange()">
+            <option value="chinese">📕 國語文</option>
+            <option value="english">📘 英語文</option>
+            <option value="math">📗 數學科</option>
+            <option value="social">📙 社會科</option>
+            <option value="nature">🔬 自然科學</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.9rem; display: block; margin-bottom: 4px;">📚 出版社版本：</label>
+          <select id="melPublisherSelect" class="version-select" style="width: 100%; padding: 8px 10px;" onchange="loadMelancesExamList()">
+            <option value="南一">南一版</option>
+            <option value="康軒">康軒版</option>
+            <option value="翰林">翰林版</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight: 900; color: #274d73; font-size: 0.9rem; display: block; margin-bottom: 4px;">🎯 段考階段：</label>
+          <select id="melStageSelect" class="version-select" style="width: 100%; padding: 8px 10px;" onchange="loadMelancesExamList()">
+            <option value="midterm">🎯 期中考 (上學期第1次)</option>
+            <option value="final">🏁 期末考 (上學期第2次)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 10px 14px;">
+        <div style="font-size: 0.92rem; color: #166534; font-weight: 700;" id="melBuiltInCountLabel">
+          📦 當前版本內建真題數：載入中...
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="tool-pill-btn" style="background: #2563eb; color: #fff; border-color: #1d4ed8; font-weight: 900;" onclick="applyMelancesFilterAndStart()">
+            🎯 直接切換此出版社出卷
+          </button>
+          <button class="tool-pill-btn" id="melAutoCrawlBtn" style="background: #16a34a; color: #fff; border-color: #15803d; font-weight: 900;" onclick="crawlMelancesByPublisher()">
+            ⚡ 一鍵依此出版社爬取新題目
+          </button>
+        </div>
+      </div>
+
+      <div id="melCrawlStatusBox" style="display: none; margin-top: 10px; padding: 10px 14px; border-radius: 12px; font-size: 0.92rem; font-weight: bold; background: #eef8ff; color: #1e5a8f; border: 1.5px solid #a4d3f9;"></div>
+
+      <div style="margin-top: 12px;">
+        <div style="font-weight: 900; color: #274d73; font-size: 0.92rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+          <span>📂 米蘭題庫雲端考卷列表（可點選單一學校考卷即時爬題或查看原卷）：</span>
+          <a id="melFolderLink" href="https://melances.com/grade4/" target="_blank" style="color: #2563eb; font-size: 0.85rem; text-decoration: underline;">開啟此版本雲端資料夾 ↗</a>
+        </div>
+        <div id="melExamListContainer" style="max-height: 34vh; overflow-y: auto; border: 1.5px solid #d6e7f7; border-radius: 14px; padding: 8px 10px; background: #fafdff;">
+          <div style="text-align: center; padding: 18px; color: #6a8aa7;">點選上方科目與出版社即可載入雲端考卷清單...</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px; margin-top: 18px;">
+        <button class="reset-btn" onclick="closeMelancesModal()">關閉視窗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div class="common-modal-overlay" id="resultModal">
+    <div class="modal-card-box">
+      <div class="certificate-ribbon">⭐ 全科學習成果榮譽證書 ⭐</div>
+      <h2 style="color: #2769a6; font-size: 1.85rem; margin-bottom: 6px;" id="certStudentName">恭喜 綸綸 小朋友！</h2>
+      <p style="color: #728ea8; font-size: 1.05rem;" id="certDate">完成了本次四年級學習檢測！</p>
+
+      <div class="score-circle">
+        <div class="score-num" id="certScore">100</div>
+        <div class="score-label" id="certTotalScore">滿分 100 分制</div>
+      </div>
+
+      <p style="font-size: 1.25rem; font-weight: 800; color: #ff5087; margin: 14px 0;" id="certPraise">
+        太厲害了！你是全科學霸小達人！🐶☁️
+      </p>
+
+      <div style="background: #f0f7fe; border-radius: 20px; padding: 16px; margin: 16px 0; text-align: left; font-size: 1.05rem; color: #355879; line-height: 1.7;" id="certSummary"></div>
+
+      <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 22px;">
+        <button class="submit-exam-btn" style="padding: 12px 30px; font-size: 1.18rem;" onclick="closeModalAndReview()">
+          📝 查看詳細解析與訂正
+        </button>
+        <button class="reset-btn" onclick="generateRandomExam(true)">
+          🎲 再來挑戰一回全新試卷
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="question_bank.js?v=20261031_4"></script>
+  <script src="question_bank_extra.js?v=20261031_4"></script>
+  <script src="question_bank_v2.js?v=20261031_4"></script>
+  <script src="question_bank_melances.js?v=20261031_4"></script>
+  <script src="app.js?v=20261031_4"></script>
+  <script src="scope.js?v=20261031_4"></script>
+</body>
+</html>
